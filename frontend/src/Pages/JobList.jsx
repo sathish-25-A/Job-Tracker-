@@ -9,7 +9,7 @@ const JobList = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch("http://localhost:8080/jobs/list/all");
+        const response = await fetch("http://localhost:8080/user/jobs/list/all");
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);

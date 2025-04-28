@@ -12,7 +12,7 @@ const Home = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("token");
 
         if (!token) {
           setError("No token found. Please log in.");
