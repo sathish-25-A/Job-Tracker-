@@ -4,7 +4,7 @@ import JobCard from "../Components/JobCard";
 import Navbar from "../Components/Navbar";
 import { useNavigate } from "react-router-dom";
 import "../Pages/home.css";
-
+ 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -12,30 +12,15 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
   const [filter, setFilter] = useState(""); // State for filter (e.g., job type)
   const navigate = useNavigate();
-
+ 
   // Fetch all jobs from the API
   //api
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-
-        if (!token) {
-          setError("No token found. Please log in.");
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:8080/user/jobs/list/all",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setJobs(response.data);
+        const response = await API.get("/user/jobs/list/all"); // Use the API instance
+        setJobs(response.data); // Store the jobs data
+        setFilteredJobs(response.data); // Initially set filteredJobs to all jobs
       } catch (err) {
         console.error("Error fetching jobs:", err);
         setError(`Error: ${err.message}`);
@@ -46,50 +31,50 @@ const Home = () => {
         }
       }
     };
-
+ 
     fetchJobs();
   }, [navigate]);
-
+ 
   // Handle search query change
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
-
+ 
   // Handle filter change
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
-
+ 
   // Filter jobs based on search and selected filter
   useEffect(() => {
     let filtered = jobs;
-
+ 
     // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter((job) =>
         job.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-
+ 
     // Apply job type filter
     if (filter) {
       filtered = filtered.filter(
         (job) => job.jobType.toLowerCase() === filter.toLowerCase()
       );
     }
-
+ 
     setFilteredJobs(filtered);
   }, [searchQuery, filter, jobs]);
-
+ 
   return (
     <div>
       <Navbar />
       <div className="home-container">
         <h1 className="home-heading">Job Listings</h1>
-
+ 
         {/* Error Handling */}
         {error && <p className="error-message">{error}</p>}
-
+ 
         {/* Search Bar */}
         <div className="search-bar">
           <input
@@ -99,7 +84,7 @@ const Home = () => {
             onChange={handleSearchChange}
           />
         </div>
-
+ 
         {/* Filter Dropdown */}
         <div className="filter-dropdown">
           <select value={filter} onChange={handleFilterChange}>
@@ -109,7 +94,7 @@ const Home = () => {
             <option value="Internship">Internship</option>
           </select>
         </div>
-
+ 
         {/* Display Filtered Jobs */}
         <div className="job-list">
           {filteredJobs.length > 0 ? (
@@ -122,5 +107,5 @@ const Home = () => {
     </div>
   );
 };
-
+ 
 export default Home;
