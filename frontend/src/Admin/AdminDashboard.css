@@ -1,0 +1,103 @@
+/* Admin Dashboard */
+.admin-dashboard {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-title {
+  font-size: 32px;
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-family: 'Arial', sans-serif;
+}
+
+.admin-actions {
+  list-style-type: none;
+  padding: 0;
+}
+
+.admin-actions li {
+  padding: 14px 22px;
+  margin: 12px 0;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.admin-actions li:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.job-list {
+  list-style: none;
+  padding: 0;
+}
+
+.job-item {
+  padding: 20px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.job-item h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.job-item p {
+  font-size: 16px;
+  color: #555;
+}
+
+.job-item .job-details {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #777;
+}
+
+.edit-btn,
+.delete-btn {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #2196f3;
+}
+
+.edit-btn:hover {
+  background-color: #0b7dda;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+}
+
+.job-item button {
+  margin-right: 10px;
+}

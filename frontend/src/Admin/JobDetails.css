@@ -1,0 +1,65 @@
+.job-details-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .job-details-container h2 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .job-details-container p {
+    margin: 8px 0;
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .description {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  .btn-group {
+    margin-top: 20px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .edit-btn {
+    background-color: #3498db;
+    color: #fff;
+  }
+  
+  .edit-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .delete-btn {
+    background-color: #e74c3c;
+    color: #fff;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .loading {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 18px;
+  }
+  
