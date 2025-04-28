@@ -14,6 +14,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   // Fetch all jobs from the API
+  //api
   useEffect(() => {
     const fetchJobs = async () => {
       try {
