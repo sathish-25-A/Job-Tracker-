@@ -3,42 +3,54 @@ body {
   background-color: #f5f5f5;
   margin: 0;
   padding: 0;
+  box-sizing: border-box; /* Ensures padding and borders don't affect layout width */
 }
 
+* {
+  box-sizing: inherit; /* Apply box-sizing rule globally */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+
 /* ----------- Login Page CSS ----------- */
-.login-container {
-  width: 300px;
-  margin: 100px auto;
+.login-container,
+.signup-container {
+  width: 100%;
+  max-width: 400px; /* Limits the width to a maximum value for readability */
+  margin: 100px auto; /* Centers the containers */
   padding: 20px;
   background: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.login-title {
+.login-title, .signup-title {
   text-align: center;
   font-size: 24px;
   margin-bottom: 10px;
 }
 
-.login-subtitle {
+.login-subtitle, .signup-subtitle {
   text-align: center;
   font-size: 18px;
   margin-bottom: 20px;
 }
 
-.login-form {
+.login-form, .signup-form {
   display: flex;
   flex-direction: column;
 }
 
-.login-label {
+.login-label, .signup-label {
   margin-bottom: 5px;
   font-size: 14px;
   font-weight: 500;
 }
 
-.login-input {
+.login-input, .signup-input {
   padding: 8px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
@@ -46,7 +58,7 @@ body {
   font-size: 14px;
 }
 
-.login-button {
+.login-button, .signup-button {
   padding: 10px;
   background-color: #4caf50;
   color: white;
@@ -56,128 +68,43 @@ body {
   cursor: pointer;
 }
 
-.login-button:hover {
+.login-button:hover, .signup-button:hover {
   background-color: #45a049;
 }
 
-.login-container h5 {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.login-container a {
-  display: block;
-  text-align: center;
-  margin-top: 5px;
-  text-decoration: none;
-  color: #007bff;
-}
-
-.login-container a:hover {
-  text-decoration: underline;
-}
+/* Error Message Styling */
 .error-message {
   color: red;
   margin-top: 10px;
   font-size: 14px;
   text-align: center;
 }
-/* ----------- SignUp Page CSS ----------- */
-.signup-container {
-  overflow: hidden;
-  width: 600px;
-  height: 100%;
-  margin: 0 auto;
-  margin: 100px auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-  justify-content: center;
-  margin-top: 10vh;
+
+/* ----------- Responsive Design for Login & SignUp Pages ----------- */
+@media (max-width: 768px) {
+  .login-container,
+  .signup-container {
+    max-width: 100%; /* Take up the full width on small screens */
+    margin: 20px; /* Reduce margin on small screens */
+  }
 }
 
-.signup-title {
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.signup-subtitle {
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.signup-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.signup-label {
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.signup-input {
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.signup-button {
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.signup-button:hover {
-  background-color: #45a049;
-}
-
-/* ---- Already have an account? Section ---- */
-.already-account {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.login-link {
-  display: inline-block;
-  margin-top: 5px;
-  text-decoration: none;
-  color: #007bff;
-  font-weight: 500;
-}
-
-.login-link:hover {
-  text-decoration: underline;
-}
-
-/* Navbar*/
-/* Basic Navbar styles */
+/* Navbar */
 .navbar {
   background-color: #1e2a38; /* Dark Blue background */
   padding: 1rem 2rem; /* Add more padding for a spacious look */
   position: sticky;
   top: 0;
-  z-index: 1000; /* Make sure the navbar stays on top */
+  z-index: 1000;
+  width: 100%; /* Full width */
 }
 
-/* Flexbox layout for the navbar items */
 .navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Styling the navigation links */
 .navbar ul {
   display: flex;
   list-style: none;
@@ -185,45 +112,39 @@ body {
   padding: 0;
 }
 
-/* Each navbar link container */
 .navbar ul li {
   margin-left: 2rem;
 }
 
-/* Navbar links */
 .navbar ul li a {
-  color: rgb(0, 0, 0); /* Light color for the text */
+  color: rgb(0, 0, 0);
   font-size: 1.1rem;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
-/* Hover effect for the links */
 .navbar ul li a:hover {
-  color: #ff9800; /* Highlight color (orange) */
+  color: #ff9800; /* Highlight color */
 }
 
-/* User info styling */
 .user-info {
   color: rgb(0, 0, 0);
   text-align: right;
   font-size: 1.1rem;
 }
 
-/* User name styling */
 .user-info h1 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
 }
 
-/* Logout button styling */
 .user-info button {
   margin-top: 0.5rem;
   padding: 0.5rem 1.2rem;
   border: none;
-  background-color: #e74c3c; /* Red button for logout */
+  background-color: #e74c3c;
   color: rgb(0, 0, 0);
   font-size: 1rem;
   cursor: pointer;
@@ -231,223 +152,22 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/* Hover effect for logout button */
 .user-info button:hover {
-  background-color: #c0392b; /* Darker red for hover effect */
-}
-
-// JobCard
-.job-card {
-  border: 1px solid #ddd;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: #f9f9f9;
-}
-
-.job-card h3 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.job-card p {
-  font-size: 1rem;
-  margin: 0.5rem 0;
-}
-
-.view-details {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.view-details:hover {
-  text-decoration: underline;
-}
-.job-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-/* Optional: JobCard basic styling (if needed) */
-.job-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.2s ease;
-  background-color: #f9f9f9;
-}
-
-.job-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-//jobdetails
-.back-button {
-  background-color: #4caf50; /* green */
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.back-button:hover {
-  background-color: #45a049; /* darker green on hover */
-}
-.job-details {
-  padding: 2rem;
-  background-color: #f9f9f9;
-}
-
-.job-details h1 {
-  font-size: 2rem;
-}
-
-.job-details p {
-  font-size: 1.2rem;
-}
-//home
-.home-container {
-  padding: 20px;
-}
-
-.home-heading {
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 2rem;
-  color: #333;
-}
-/* Dashboard Container */
-.dashboard-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-/* Dashboard Header */
-.dashboard-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.dashboard-header h2 {
-  font-size: 32px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.dashboard-header p {
-  font-size: 18px;
-  color: #666;
-  line-height: 1.6;
-}
-
-/* Charts Section */
-.dashboard-charts {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  flex-wrap: wrap; /* Flexbox allows wrapping on smaller screens */
-}
-
-/* Chart Container Styling */
-.chart-container {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  width: 48%;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.chart-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.chart-container h3 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.chart-container .recharts-wrapper {
-  background-color: #f4f5f7;
-  padding: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
+  background-color: #c0392b;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-charts {
-    flex-direction: column;
+  .navbar {
+    padding: 1rem; /* Less padding on smaller screens */
+  }
+  .navbar ul {
+    flex-direction: column; /* Stack navbar items vertically */
+    margin-top: 1rem;
   }
 
-  .chart-container {
-    width: 100%;
-    margin-bottom: 30px;
+  .navbar ul li {
+    margin-left: 0;
+    margin-bottom: 1rem; /* Add space between links */
   }
-}
-
-
-
-/* Job List Section (Horizontal Layout) */
-.job-list {
-  display: flex;
-  overflow-x: auto; /* Allows horizontal scrolling if content overflows */
-  gap: 20px;
-  padding: 20px;
-  margin-top: 20px;
-  justify-content: flex-start; /* Aligns items to the left */
-}
-
-.job-list .job-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
-  width: 300px; /* Fixed width for job cards */
-  padding: 20px;
-  text-align: center;
-}
-
-.job-list .job-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.job-list .job-card h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-}
-
-.job-list .job-card p {
-  font-size: 14px;
-  color: #666;
-  margin: 10px 0;
-}
-
-.job-list .job-card .btn {
-  background-color: #007bff;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-}
-
-.job-list .job-card .btn:hover {
-  background-color: #0056b3;
-}
-
-.job-list .job-card .btn:active {
-  background-color: #00408d;
 }

@@ -13,8 +13,8 @@ import JobList from "./Pages/JobList";
 import AdminDashboard from "./Admin/AdminDashboard";
 import AdminRoute from "./Admin/AdminRoute";
 import ManageJobs from "./Admin/ManageJobs";
-import AdminJobDetails from "./Admin/JobDetails";
-import ManageUsers from "./Admin/ManageUsers"; // ✅ Added Import
+import ManageUsers from "./Admin/ManageUsers"; // Import ManageUsers
+import UserDetail from "./Admin/UserDetails"; // Import UserDetail for user-specific details
 
 function App() {
   return (
@@ -39,14 +39,6 @@ function App() {
           element={
             <AdminRoute>
               <ManageJobs />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/jobs/:id"
-          element={
-            <AdminRoute>
-              <AdminJobDetails />
             </AdminRoute>
           }
         />
@@ -105,6 +97,16 @@ function App() {
           element={
             <PrivateRoute>
               <MyApplications />
+            </PrivateRoute>
+          }
+        />
+
+        {/* User Detail Route */}
+        <Route
+          path="/user-detail/:userId"
+          element={
+            <PrivateRoute>
+              <UserDetail /> {/* User-specific page */}
             </PrivateRoute>
           }
         />

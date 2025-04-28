@@ -24,23 +24,19 @@ public class ApplicationController {
 	private ApplicationService appService;
 	
 	@PostMapping("/apply/{jobId}")
-	@PreAuthorize("hasAuthority('USER')")
 	public Application apply(@PathVariable UUID jobId) {
 		return appService.applyForJob(jobId);
 	}
 	
 	@GetMapping("/job/{jobId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
 	public List<Application> getByJob(@PathVariable UUID jobID){
 		return appService.getByJob(jobID);
 	}
 	@GetMapping("/user/{userId}")
-	@PreAuthorize("#userId.toString() == authentication.principal.id.toString() or hasAuthority('ADMIN')")
 	public List<Application> getByUser(@PathVariable UUID userID){
 		return appService.getByUser(userID);
 	}
 	@PutMapping("/status/{appId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
 	public Application updateStatus(@PathVariable UUID appId, @RequestParam String status) {
 		return appService.updateStatus(appId,status);
 	}
