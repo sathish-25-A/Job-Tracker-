@@ -1,19 +1,22 @@
-// src/components/ManageUsers.js
 import React, { useEffect, useState } from 'react';
-import API from '../services/api';  // API instance to interact with backend
+import API from '../services/api';
 import Navbar from '../Components/Navbar';
-import './ManageUsers.css';  // Custom CSS for styling
+import './ManageUsers.css';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch users from the backend
+  // Fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await API.get('/admin/jobs/users');
-        setUsers(response.data);  // Save the fetched users
+        const response = await API.get('/admin/jobs/users', {  // ✅ Correct URL
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`  // ✅ Correct token key
+          }
+        });
+        setUsers(response.data);
       } catch (err) {
         setError("Error fetching users.");
         console.error(err);
@@ -21,34 +24,35 @@ const ManageUsers = () => {
     };
 
     fetchUsers();
-  }, []);  // Empty array means this effect runs once when the component mounts
+  }, []);
 
-  // Handle role change (e.g., promote a user to admin)
-  const handleRoleChange = async (userId, newRole) => {
-    try {
-      await API.put(`/admin/users/role/${userId}`, { role: newRole });
-      setUsers(users.map(user => user.id === userId ? { ...user, role: newRole } : user));  // Update role in state
-    } catch (error) {
-      setError('Error updating user role');
-      console.error(error);
-    }
-  };
+  // Count users and admins
+  const totalUsers = users.length;
+  const totalAdmins = users.filter(user => user.role === "ADMIN").length;
+  const totalNormalUsers = users.filter(user => user.role === "USER").length;
 
   return (
     <div>
       <Navbar />
       <div className="manage-users-container">
         <h2>Manage Users</h2>
-        
+
         {error && <p className="error-message">{error}</p>}
 
+        {/* Display summary */}
+        <div className="user-summary">
+          <p><strong>Total Users:</strong> {totalUsers}</p>
+          <p><strong>Total Admins:</strong> {totalAdmins}</p>
+          <p><strong>Total Normal Users:</strong> {totalNormalUsers}</p>
+        </div>
+
+        {/* Display all users */}
         <table className="users-table">
           <thead>
             <tr>
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -58,23 +62,16 @@ const ManageUsers = () => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>
-                    {/* Toggle role if the user is not already an admin */}
-                    {user.role !== 'ADMIN' ? (
-                      <button onClick={() => handleRoleChange(user.id, 'ADMIN')}>Make Admin</button>
-                    ) : (
-                      <button onClick={() => handleRoleChange(user.id, 'USER')}>Revoke Admin</button>
-                    )}
-                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4">No users found.</td>
+                <td colSpan="3">No users found.</td>
               </tr>
             )}
           </tbody>
         </table>
+
       </div>
     </div>
   );

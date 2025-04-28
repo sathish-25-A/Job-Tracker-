@@ -13,8 +13,8 @@ import JobList from "./Pages/JobList";
 import AdminDashboard from "./Admin/AdminDashboard";
 import AdminRoute from "./Admin/AdminRoute";
 import ManageJobs from "./Admin/ManageJobs";
-import AddJob from "./Admin/AddJob";
-import AdminJobDetails from "./Admin/JobDetails"; // ✅ Import admin job detail view
+import AdminJobDetails from "./Admin/JobDetails";
+import ManageUsers from "./Admin/ManageUsers"; // ✅ Added Import
 
 function App() {
   return (
@@ -43,18 +43,18 @@ function App() {
           }
         />
         <Route
-          path="/admin/manage-jobs/add"
-          element={
-            <AdminRoute>
-              <AddJob />
-            </AdminRoute>
-          }
-        />
-        <Route
           path="/admin/jobs/:id"
           element={
             <AdminRoute>
               <AdminJobDetails />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-users"
+          element={
+            <AdminRoute>
+              <ManageUsers />
             </AdminRoute>
           }
         />
