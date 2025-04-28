@@ -1,13 +1,17 @@
 package com.JT.Job_Tracker.Service;
 
+import com.JT.Job_Tracker.dto.UserApplicationStatus;
+import com.JT.Job_Tracker.model.Application;
 import com.JT.Job_Tracker.model.Job;
 import com.JT.Job_Tracker.model.User;
+import com.JT.Job_Tracker.repo.ApplicationRepo;
 import com.JT.Job_Tracker.repo.JobRepo;
 import com.JT.Job_Tracker.repo.UserRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +23,9 @@ public class JobService {
 	
 	@Autowired
 	private UserRepo userRepo;
+	
+	@Autowired
+	private ApplicationRepo applicationRepo;
 
     // Method to get all jobs
     public List<Job> getAllJobs() {
@@ -56,8 +63,39 @@ public class JobService {
         jobRepo.deleteById(id);
     }
 
+    //Method to list all users
 	public List<User> getAllUsers() {
 		return userRepo.findAll();
 	}
 
+	//Method to list userDetails and applied stats
+	public List<UserApplicationStatus> getUserApplicationStats() {
+		List<User> users = userRepo.findAll(); 
+	    List<UserApplicationStatus> stats = new ArrayList<>();
+
+	    for (User user : users) {
+	    	List<Application> applications = applicationRepo.findByUserId(user.getId());
+
+	        int totalApplications = applications.size();
+	        int acceptedApplications = (int) applications.stream()
+	                .filter(app -> "ACCEPTED".equalsIgnoreCase(app.getStatus()))
+	                .count();
+	        int rejectedApplications = (int) applications.stream()
+	                .filter(app -> "REJECTED".equalsIgnoreCase(app.getStatus()))
+	                .count();
+
+	        UserApplicationStatus status = new UserApplicationStatus();
+	        status.setUserId(user.getId());
+	        status.setName(user.getName());
+	        status.setEmail(user.getEmail());
+	        status.setAppliedJobs(totalApplications);
+	        status.setAcceptedJobs(acceptedApplications);
+	        status.setRejectedJobs(rejectedApplications);
+
+	        stats.add(status);
+	    }
+	    return stats;
+
+}
+	
 }

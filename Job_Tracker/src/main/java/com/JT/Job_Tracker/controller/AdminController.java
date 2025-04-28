@@ -3,6 +3,7 @@ package com.JT.Job_Tracker.controller;
 import com.JT.Job_Tracker.model.Job;
 import com.JT.Job_Tracker.model.User;
 import com.JT.Job_Tracker.Service.JobService;
+import com.JT.Job_Tracker.dto.UserApplicationStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,13 +45,21 @@ public class AdminController {
         return ResponseEntity.ok(jobService.getAllJobs());
     }
     
+    //Method to list user with id
     @GetMapping("/list/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable UUID id){
     	return ResponseEntity.ok(jobService.getJobById(id));
     }
     
+    //Method to list all users
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(jobService.getAllUsers());
+    }
+    
+    //Method to list userDetails with stats
+    @GetMapping("/users/stats")
+    public ResponseEntity<List<UserApplicationStatus>> getUserApplicationStats() {
+        return ResponseEntity.ok(jobService.getUserApplicationStats());
     }
 }
