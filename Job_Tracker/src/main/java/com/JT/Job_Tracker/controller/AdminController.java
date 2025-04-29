@@ -4,6 +4,7 @@ import com.JT.Job_Tracker.model.Application;
 import com.JT.Job_Tracker.model.Job;
 import com.JT.Job_Tracker.model.User;
 import com.JT.Job_Tracker.Service.JobService;
+import com.JT.Job_Tracker.dto.ApplicationInfo;
 import com.JT.Job_Tracker.dto.UserApplicationStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class AdminController {
     }
     
     @GetMapping("/applications")
-    public ResponseEntity<List<Application>> getAllApplications() {
+    public ResponseEntity<List<ApplicationInfo>> getAllApplications() {
         return ResponseEntity.ok(jobService.getAllApplications());
     }
     

@@ -1,6 +1,7 @@
 package com.JT.Job_Tracker.Service;
 
 import com.JT.Job_Tracker.config.*;
+import com.JT.Job_Tracker.dto.ApplicationInfo;
 import com.JT.Job_Tracker.dto.UserApplicationStatus;
 import com.JT.Job_Tracker.model.Application;
 import com.JT.Job_Tracker.model.Job;
@@ -12,6 +13,7 @@ import com.JT.Job_Tracker.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,11 +96,26 @@ public class JobService {
 	    return status;
 	}
 	//Method to get all Applications
-	public List<Application> getAllApplications() {
-	    return applicationRepo.findAll();
+	public List<ApplicationInfo> getAllApplications() {
+	    List<Application> applications = applicationRepo.findAll();
+	    List<ApplicationInfo> dtoList = new ArrayList<>();
+
+	    for (Application app : applications) {
+	        ApplicationInfo dto = new ApplicationInfo();
+	        dto.setApplicationId(app.getId());
+	        dto.setUserId(app.getUser().getId());
+	        dto.setUserName(app.getUser().getName());
+	        dto.setJobId(app.getJob().getId());
+	        dto.setJobTitle(app.getJob().getTitle());
+	        dto.setStatus(app.getStatus());
+
+	        dtoList.add(dto);
+	    }
+
+	    return dtoList;
 	}
 	
-	//Methos to update status of specific application
+	//Method to update status of specific application
 	public Application updateStatus(UUID appId, String status) {
 	    Application application = applicationRepo.findById(appId)
 	            .orElseThrow(() -> new RuntimeException("Application not found"));
