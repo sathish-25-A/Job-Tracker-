@@ -13,16 +13,23 @@ const UserDetail = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await API.get(`/admin/users/${userId}`);
+        const response = await API.get(`/admin/jobs/users/stats/${userId}`);
         setUserDetails(response.data);
       } catch (err) {
-        setError("Error fetching user details.");
+        if (err.response) {
+          setError(`Error: ${err.response.status} - ${err.response.data.message || err.response.statusText}`);
+        } else if (err.request) {
+          setError('No response received from the server.');
+        } else {
+          setError(`Error: ${err.message}`);
+        }
         console.error(err);
       }
     };
-
+  
     fetchUserDetails();
-  }, [userId]); // Fetch details when userId changes
+  }, [userId]);
+  
 
   if (error) {
     return <div className="error-message">{error}</div>;

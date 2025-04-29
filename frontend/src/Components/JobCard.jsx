@@ -1,9 +1,10 @@
+// src/Components/JobCard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 
 const JobCard = ({ job }) => {
   if (!job) {
-    return <div>No job data</div>;
+    return <div>No job data</div>; // Display message if no job data is passed
   }
 
   return (
