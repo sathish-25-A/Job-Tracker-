@@ -56,14 +56,24 @@ public class UserService {
         return token.substring(7);
     }
 
+<<<<<<< HEAD
     public UserProfile addOrUpdateProfile(UUID userId, UserProfile profile, MultipartFile resumeFile) throws IOException {
         Optional<User> userOpt = userRepo.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found!");
         }
+=======
 
-        User user = userOpt.get();
+
+    public UserProfile updateProfile(UUID userId, UserProfile userProfileDTO) {
+        // Find the user by ID
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+>>>>>>> 33df42531990e03f67c4b5e6790d4ea04230cfaf
+
+        // Check if the user already has a profile
+        Optional<UserProfile> existingProfileOpt = profileRepo.findByUserId(userId);
         
+<<<<<<< HEAD
         // Update user data if the profile has changes
         if (profile.getUser() != null && profile.getUser().getName() != null) {
             user.setName(profile.getUser().getName());
@@ -98,5 +108,29 @@ public class UserService {
 
         // Save the updated profile
         return profileRepo.save(existingProfile);
+=======
+        UserProfile userProfile;
+        if (existingProfileOpt.isPresent()) {
+            // If the user has a profile, update it
+            userProfile = existingProfileOpt.get();
+        } else {
+            // If the user doesn't have a profile, create a new one
+            userProfile = new UserProfile();
+            userProfile.setUser(user); // Associate user with the new profile
+        }
+
+        // Update the profile fields
+        userProfile.setLocation(userProfileDTO.getLocation());
+        userProfile.setMobileNumber(userProfileDTO.getMobileNumber());
+        userProfile.setExperience(userProfileDTO.getExperience());
+        userProfile.setSkill(userProfileDTO.getSkill());
+        userProfile.setGender(userProfileDTO.getGender());
+        userProfile.setDob(userProfileDTO.getDob());
+        userProfile.setLanguage(userProfileDTO.getLanguage());
+        userProfile.setEducation(userProfileDTO.getEducation());
+
+        // Save the profile (either updated or newly created)
+        return profileRepo.save(userProfile);
+>>>>>>> 33df42531990e03f67c4b5e6790d4ea04230cfaf
     }
 }

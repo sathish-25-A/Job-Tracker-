@@ -27,8 +27,6 @@ public class UserProfile {
 
     private String skill;
 
-    private String resume; 
-
     private String gender;
 
     private LocalDate dob;
