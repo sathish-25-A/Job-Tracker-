@@ -58,8 +58,9 @@ public class AdminController {
     }
     
     //Method to list userDetails with stats
-    @GetMapping("/users/stats")
-    public ResponseEntity<List<UserApplicationStatus>> getUserApplicationStats() {
-        return ResponseEntity.ok(jobService.getUserApplicationStats());
+    @GetMapping("/users/stats/{userId}")
+    public ResponseEntity<UserApplicationStatus> getUserApplicationStatsByUserId(@PathVariable UUID userId) {
+        return ResponseEntity.ok(jobService.getUserApplicationStatsByUserId(userId));
     }
+
 }

@@ -22,19 +22,23 @@ public class ApplicationController {
 	@Autowired
 	private ApplicationService appService;
 	
+	//Method to apply for the job
 	@PostMapping("/apply/{jobId}")
 	public Application apply(@PathVariable UUID jobId) {
 		return appService.applyForJob(jobId);
 	}
 	
+	//Method to search for applied job(Admin)
 	@GetMapping("/job/{jobId}")
 	public List<Application> getByJob(@PathVariable UUID jobID){
 		return appService.getByJob(jobID);
 	}
+	//Method to search for applied job(User)
 	@GetMapping("/user/{userId}")
 	public List<Application> getByUser(@PathVariable UUID userID){
 		return appService.getByUser(userID);
 	}
+	//Method to change the status of the job
 	@PutMapping("/status/{appId}")
 	public Application updateStatus(@PathVariable UUID appId, @RequestParam String status) {
 		return appService.updateStatus(appId,status);

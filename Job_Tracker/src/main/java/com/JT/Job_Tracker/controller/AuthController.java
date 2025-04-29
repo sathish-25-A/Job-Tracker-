@@ -37,6 +37,7 @@ public class AuthController {
     @Autowired 
     private PasswordEncoder passwordEncoder;
 
+    //Method to register a user
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         User user = new User();
@@ -47,6 +48,7 @@ public class AuthController {
         userRepo.save(user);
         return ResponseEntity.ok("Registered successfully");
     }
+    //Method to login 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         authManager.authenticate(

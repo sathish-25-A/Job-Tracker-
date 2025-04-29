@@ -11,7 +11,6 @@ import com.JT.Job_Tracker.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,34 +67,31 @@ public class JobService {
 		return userRepo.findAll();
 	}
 
-	//Method to list userDetails and applied stats
-	public List<UserApplicationStatus> getUserApplicationStats() {
-		List<User> users = userRepo.findAll(); 
-	    List<UserApplicationStatus> stats = new ArrayList<>();
+	public UserApplicationStatus getUserApplicationStatsByUserId(UUID userId) {
+	    User user = userRepo.findById(userId)
+	        .orElseThrow(() -> new RuntimeException("User not found"));
 
-	    for (User user : users) {
-	    	List<Application> applications = applicationRepo.findByUserId(user.getId());
+	    List<Application> applications = applicationRepo.findByUserId(userId);
 
-	        int totalApplications = applications.size();
-	        int acceptedApplications = (int) applications.stream()
-	                .filter(app -> "ACCEPTED".equalsIgnoreCase(app.getStatus()))
-	                .count();
-	        int rejectedApplications = (int) applications.stream()
-	                .filter(app -> "REJECTED".equalsIgnoreCase(app.getStatus()))
-	                .count();
+	    int totalApplications = applications.size();
+	    int acceptedApplications = (int) applications.stream()
+	            .filter(app -> "ACCEPTED".equalsIgnoreCase(app.getStatus()))
+	            .count();
+	    int rejectedApplications = (int) applications.stream()
+	            .filter(app -> "REJECTED".equalsIgnoreCase(app.getStatus()))
+	            .count();
 
-	        UserApplicationStatus status = new UserApplicationStatus();
-	        status.setUserId(user.getId());
-	        status.setName(user.getName());
-	        status.setEmail(user.getEmail());
-	        status.setAppliedJobs(totalApplications);
-	        status.setAcceptedJobs(acceptedApplications);
-	        status.setRejectedJobs(rejectedApplications);
+	    UserApplicationStatus status = new UserApplicationStatus();
+	    status.setUserId(user.getId());
+	    status.setName(user.getName());
+	    status.setEmail(user.getEmail());
+	    status.setAppliedJobs(totalApplications);
+	    status.setAcceptedJobs(acceptedApplications);
+	    status.setRejectedJobs(rejectedApplications);
 
-	        stats.add(status);
-	    }
-	    return stats;
+	    return status;
+	}
+
 
 }
 	
-}
