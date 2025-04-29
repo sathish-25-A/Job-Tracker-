@@ -1,11 +1,18 @@
 import { useContext, createContext, useState, useEffect } from "react";
+import  jwt_decode  from 'jwt-decode'; // Correct named import
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  const decodedToken = jwt_decode(token); // Using the named import
+  const currentTime = Date.now() / 1000; // Current time in seconds
+  return decodedToken.exp < currentTime;
+};
+
 export const AuthProvider = ({ children }) => {
-  // On initial load, try to get stored user and token from localStorage
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -14,7 +21,12 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("authToken"));
 
   useEffect(() => {
-    // If the user or token is changed, update localStorage
+    if (isTokenExpired(token)) {
+      logout();
+    }
+  }, [token]);
+
+  useEffect(() => {
     if (user && token) {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("authToken", token);
@@ -24,6 +36,8 @@ export const AuthProvider = ({ children }) => {
   const login = (userData, authToken) => {
     setUser(userData);
     setToken(authToken);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("authToken", authToken);
   };
 
   const logout = () => {

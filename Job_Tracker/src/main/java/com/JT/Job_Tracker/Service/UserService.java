@@ -56,23 +56,24 @@ public class UserService {
         return token.substring(7);
     }
 
-
-
     public UserProfile addOrUpdateProfile(UUID userId, UserProfile profile, MultipartFile resumeFile) throws IOException {
         Optional<User> userOpt = userRepo.findById(userId);
-        if (userOpt.isEmpty()) throw new RuntimeException("User not found!");
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found!");
+        }
 
         User user = userOpt.get();
         
+        // Update user data if the profile has changes
         if (profile.getUser() != null && profile.getUser().getName() != null) {
             user.setName(profile.getUser().getName());
         }
 
-        // Get the profile for the user, or create a new one if it doesn't exist
+        // Get existing profile or create new one
         UserProfile existingProfile = profileRepo.findByUserId(userId).orElse(new UserProfile());
         existingProfile.setUser(user);
 
-        // Set profile details from the input 'profile'
+        // Set updated fields from profile
         existingProfile.setLocation(profile.getLocation());
         existingProfile.setMobileNumber(profile.getMobileNumber());
         existingProfile.setExperience(profile.getExperience());
@@ -82,22 +83,20 @@ public class UserService {
         existingProfile.setLanguage(profile.getLanguage());
         existingProfile.setEducation(profile.getEducation());
 
-        // Save resume file
+        // Save resume if present
         if (resumeFile != null && !resumeFile.isEmpty()) {
             String filename = UUID.randomUUID() + "_" + resumeFile.getOriginalFilename();
             Path uploadPath = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);  // Create the directory if it does not exist
+                Files.createDirectories(uploadPath);
             }
 
-            Path filePath = uploadPath.resolve(filename);  // Create the file path
-            Files.copy(resumeFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);  // Save the file
-            existingProfile.setResume(filePath.toString());  // Set the file path in the profile
+            Path filePath = uploadPath.resolve(filename);
+            Files.copy(resumeFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            existingProfile.setResume(filePath.toString());  // Save the file path in the profile
         }
 
-        // Save and return the updated or newly created profile
+        // Save the updated profile
         return profileRepo.save(existingProfile);
     }
-
 }
-

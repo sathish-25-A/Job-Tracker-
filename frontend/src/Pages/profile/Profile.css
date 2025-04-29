@@ -1,0 +1,44 @@
+.profile-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+    position: relative;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+  }
+  
+  .profile-heading {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .resume-section {
+    margin-top: 1rem;
+  }
+  
+  .resume-btn {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: #0b5ed7;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .edit-profile-btn {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    padding: 0.5rem 1rem;
+    background-color: #198754;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  

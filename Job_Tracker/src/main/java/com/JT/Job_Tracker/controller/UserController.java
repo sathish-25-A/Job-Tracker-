@@ -51,7 +51,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     
-    @PostMapping("/add/{userId}")
+    @PutMapping("/add/{userId}")
     public ResponseEntity<UserProfile> addOrUpdateProfile(
             @PathVariable UUID userId,
             @RequestPart("profile") UserProfile profile,
