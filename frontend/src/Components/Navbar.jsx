@@ -11,8 +11,6 @@ const Navbar = () => {
     navigate('/login');
   };
 
- 
-
   return (
     <nav className="navbar">
       <div className="navbar-content">
@@ -22,7 +20,7 @@ const Navbar = () => {
               <li><Link to="/admin/dashboard">Dashboard</Link></li>
               <li><Link to="/admin/manage-jobs">Manage Jobs</Link></li>
               <li><Link to="/admin/manage-users">Manage Users</Link></li>
-              
+              <li><Link to="/admin/job-requests">Job Requests</Link></li> {/* ✅ New link */}
             </>
           ) : (
             <>

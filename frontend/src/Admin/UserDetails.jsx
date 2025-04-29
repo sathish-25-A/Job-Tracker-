@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import API from '../services/api';  // Import API.js
-import { useParams } from 'react-router-dom';  // To access route parameters
-import Navbar from '../Components/Navbar';
-import './UserDetail.css';
+import React, { useEffect, useState } from "react";
+import API from "../services/api"; // Import API.js
+import { useParams } from "react-router-dom"; // To access route parameters
+import Navbar from "../Components/Navbar";
+import "./UserDetail.css";
 
 const UserDetail = () => {
-  const { userId } = useParams();  // Get userId from the URL parameter
+  const { userId } = useParams(); // Get userId from the URL parameter
   const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState(null);
 
@@ -17,19 +17,22 @@ const UserDetail = () => {
         setUserDetails(response.data);
       } catch (err) {
         if (err.response) {
-          setError(`Error: ${err.response.status} - ${err.response.data.message || err.response.statusText}`);
+          setError(
+            `Error: ${err.response.status} - ${
+              err.response.data.message || err.response.statusText
+            }`
+          );
         } else if (err.request) {
-          setError('No response received from the server.');
+          setError("No response received from the server.");
         } else {
           setError(`Error: ${err.message}`);
         }
         console.error(err);
       }
     };
-  
+
     fetchUserDetails();
   }, [userId]);
-  
 
   if (error) {
     return <div className="error-message">{error}</div>;
@@ -46,16 +49,25 @@ const UserDetail = () => {
         <h2>User Details</h2>
 
         <div className="user-info">
-          <p><strong>Name:</strong> {userDetails.name}</p>
-          <p><strong>Email:</strong> {userDetails.email}</p>
-          <p><strong>Role:</strong> {userDetails.role}</p>
+          <p>
+            <strong>Name:</strong> {userDetails.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {userDetails.email}
+          </p>
         </div>
 
         {/* Display applied jobs stats */}
         <div className="job-stats">
-          <p><strong>Jobs Applied:</strong> {userDetails.jobsApplied}</p>
-          <p><strong>Jobs Rejected:</strong> {userDetails.jobsRejected}</p>
-          <p><strong>Jobs Interviewed:</strong> {userDetails.jobsInterviewed}</p>
+          <p>
+            <strong>Jobs Applied:</strong> {userDetails.appliedJobs}
+          </p>
+          <p>
+            <strong>Jobs Accepted:</strong> {userDetails.acceptedJobs}
+          </p>
+          <p>
+            <strong>Jobs Rejected:</strong> {userDetails.rejectedJobs}
+          </p>
         </div>
       </div>
     </div>

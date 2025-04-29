@@ -13,8 +13,9 @@ import JobList from "./Pages/JobList";
 import AdminDashboard from "./Admin/AdminDashboard";
 import AdminRoute from "./Admin/AdminRoute";
 import ManageJobs from "./Admin/ManageJobs";
-import ManageUsers from "./Admin/ManageUsers"; // Import ManageUsers
-import UserDetail from "./Admin/UserDetails"; // Import UserDetail for user-specific details
+import ManageUsers from "./Admin/ManageUsers";
+import UserDetail from "./Admin/UserDetails";
+import JobRequest from "./Admin/JobRequest/JobRequest"; // ✅ Import new JobRequest page
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
           element={
             <AdminRoute>
               <ManageUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/job-requests" // ✅ New route for Job Requests page
+          element={
+            <AdminRoute>
+              <JobRequest />
             </AdminRoute>
           }
         />
@@ -106,7 +115,7 @@ function App() {
           path="/user-detail/:userId"
           element={
             <PrivateRoute>
-              <UserDetail /> {/* User-specific page */}
+              <UserDetail />
             </PrivateRoute>
           }
         />
