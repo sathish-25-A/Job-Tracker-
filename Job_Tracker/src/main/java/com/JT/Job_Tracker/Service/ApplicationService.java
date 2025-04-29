@@ -52,6 +52,7 @@ public class ApplicationService {
 	        dto.setUserName(app.getUser().getName());
 	        dto.setJobId(app.getJob().getId());
 	        dto.setJobTitle(app.getJob().getTitle());
+	        dto.setCompany(app.getJob().getCompany());
 	        dto.setStatus(app.getStatus());
 	        dtoList.add(dto);
 	    }

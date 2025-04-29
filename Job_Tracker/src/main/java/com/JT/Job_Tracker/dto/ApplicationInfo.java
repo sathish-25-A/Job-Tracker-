@@ -10,5 +10,6 @@ public class ApplicationInfo {
     private String userName;
     private UUID jobId;
     private String jobTitle;
+    private String company;
     private String status;
 }
