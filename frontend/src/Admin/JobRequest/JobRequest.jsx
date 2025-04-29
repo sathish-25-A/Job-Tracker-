@@ -55,13 +55,13 @@ const JobRequest = () => {
             </thead>
             <tbody>
               {filteredApps.map((app) => (
-                <tr key={app.id}>
+                <tr key={app.applicationId}>
                   <td>{app.userName}</td>
                   <td>{app.jobTitle}</td>
                   <td>
-                    <button onClick={() => handleStatusChange(app.id, 'ACCEPTED')}>Accept</button>
-                    <button onClick={() => handleStatusChange(app.id, 'REJECTED')}>Reject</button>
-                    <button onClick={() => handleStatusChange(app.id, 'PENDING')}>Pending</button>
+                    <button onClick={() => handleStatusChange(app.applicationId, 'ACCEPTED')}>Accept</button>
+                    <button onClick={() => handleStatusChange(app.applicationId, 'REJECTED')}>Reject</button>
+                    <button onClick={() => handleStatusChange(app.applicationId, 'PENDING')}>Pending</button>
                   </td>
                 </tr>
               ))}
