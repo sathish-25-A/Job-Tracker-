@@ -1,5 +1,6 @@
 package com.JT.Job_Tracker.controller;
 
+import com.JT.Job_Tracker.model.Application;
 import com.JT.Job_Tracker.model.Job;
 import com.JT.Job_Tracker.model.User;
 import com.JT.Job_Tracker.Service.JobService;
@@ -62,5 +63,17 @@ public class AdminController {
     public ResponseEntity<UserApplicationStatus> getUserApplicationStatsByUserId(@PathVariable UUID userId) {
         return ResponseEntity.ok(jobService.getUserApplicationStatsByUserId(userId));
     }
+    
+    @GetMapping("/applications")
+    public ResponseEntity<List<Application>> getAllApplications() {
+        return ResponseEntity.ok(jobService.getAllApplications());
+    }
+    
+  //Method to change the status of the job
+  	@PutMapping("/status/{appId}")
+  	public Application updateStatus(@PathVariable UUID appId, @RequestParam String status) {
+  		return jobService.updateStatus(appId,status);
+  	}
+
 
 }

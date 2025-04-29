@@ -29,19 +29,17 @@ public class ApplicationController {
 	}
 	
 	//Method to search for applied job(Admin)
-	@GetMapping("/job/{jobId}")
+	@GetMapping("/job/{jobID}")
 	public List<Application> getByJob(@PathVariable UUID jobID){
 		return appService.getByJob(jobID);
 	}
 	//Method to search for applied job(User)
-	@GetMapping("/user/{userId}")
+	@GetMapping("/user/{userID}")
 	public List<Application> getByUser(@PathVariable UUID userID){
 		return appService.getByUser(userID);
 	}
-	//Method to change the status of the job
-	@PutMapping("/status/{appId}")
-	public Application updateStatus(@PathVariable UUID appId, @RequestParam String status) {
-		return appService.updateStatus(appId,status);
-	}
+	
+	
+	
 
 }

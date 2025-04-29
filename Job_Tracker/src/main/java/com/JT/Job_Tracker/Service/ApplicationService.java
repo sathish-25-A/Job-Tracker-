@@ -46,12 +46,7 @@ public class ApplicationService {
 		return appRepo.findByUserId(userID);
 	}
 
-	public Application updateStatus(UUID appId, String status) { 
-		Application app = appRepo.findById(appId) .orElseThrow(()-> new RuntimeException("Application not found"));
-		app.setStatus(status); return
-		appRepo.save(app) ; 
-		
-	}
+	
 	 
 
 }

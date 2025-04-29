@@ -1,5 +1,6 @@
 package com.JT.Job_Tracker.Service;
 
+import com.JT.Job_Tracker.config.*;
 import com.JT.Job_Tracker.dto.UserApplicationStatus;
 import com.JT.Job_Tracker.model.Application;
 import com.JT.Job_Tracker.model.Job;
@@ -25,6 +26,7 @@ public class JobService {
 	
 	@Autowired
 	private ApplicationRepo applicationRepo;
+
 
     // Method to get all jobs
     public List<Job> getAllJobs() {
@@ -66,7 +68,7 @@ public class JobService {
 	public List<User> getAllUsers() {
 		return userRepo.findAll();
 	}
-
+	//Method to get User status by Id
 	public UserApplicationStatus getUserApplicationStatsByUserId(UUID userId) {
 	    User user = userRepo.findById(userId)
 	        .orElseThrow(() -> new RuntimeException("User not found"));
@@ -91,6 +93,20 @@ public class JobService {
 
 	    return status;
 	}
+	//Method to get all Applications
+	public List<Application> getAllApplications() {
+	    return applicationRepo.findAll();
+	}
+	
+	//Methos to update status of specific application
+	public Application updateStatus(UUID appId, String status) {
+	    Application application = applicationRepo.findById(appId)
+	            .orElseThrow(() -> new RuntimeException("Application not found"));
+
+	    application.setStatus(status.toUpperCase());
+	    return applicationRepo.save(application);
+	}
+
 
 
 }
