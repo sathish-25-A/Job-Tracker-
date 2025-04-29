@@ -51,13 +51,15 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     
-    @PostMapping("/add/{userId}")
-    public ResponseEntity<UserProfile> addOrUpdateProfile(
-            @PathVariable UUID userId,
-            @RequestPart("profile") UserProfile profile,
-            @RequestPart(value = "resume", required = false) MultipartFile resumeFile) throws IOException {
-
-        return ResponseEntity.ok(userService.addOrUpdateProfile(userId, profile, resumeFile));
+    @PutMapping("/profile/update/{userId}")
+    public ResponseEntity<UserProfile> updateProfile(@PathVariable UUID userId, @RequestBody UserProfile userProfileDTO) {
+        UserProfile updatedProfile = userService.updateProfile(userId, userProfileDTO);
+        return ResponseEntity.ok(updatedProfile);
     }
+
+
+
+
+
    
 }

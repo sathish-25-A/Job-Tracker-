@@ -58,45 +58,35 @@ public class UserService {
 
 
 
-    public UserProfile addOrUpdateProfile(UUID userId, UserProfile profile, MultipartFile resumeFile) throws IOException {
-        Optional<User> userOpt = userRepo.findById(userId);
-        if (userOpt.isEmpty()) throw new RuntimeException("User not found!");
+    public UserProfile updateProfile(UUID userId, UserProfile userProfileDTO) {
+        // Find the user by ID
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userOpt.get();
+        // Check if the user already has a profile
+        Optional<UserProfile> existingProfileOpt = profileRepo.findByUserId(userId);
         
-        if (profile.getUser() != null && profile.getUser().getName() != null) {
-            user.setName(profile.getUser().getName());
+        UserProfile userProfile;
+        if (existingProfileOpt.isPresent()) {
+            // If the user has a profile, update it
+            userProfile = existingProfileOpt.get();
+        } else {
+            // If the user doesn't have a profile, create a new one
+            userProfile = new UserProfile();
+            userProfile.setUser(user); // Associate user with the new profile
         }
 
-        // Get the profile for the user, or create a new one if it doesn't exist
-        UserProfile existingProfile = profileRepo.findByUserId(userId).orElse(new UserProfile());
-        existingProfile.setUser(user);
+        // Update the profile fields
+        userProfile.setLocation(userProfileDTO.getLocation());
+        userProfile.setMobileNumber(userProfileDTO.getMobileNumber());
+        userProfile.setExperience(userProfileDTO.getExperience());
+        userProfile.setSkill(userProfileDTO.getSkill());
+        userProfile.setGender(userProfileDTO.getGender());
+        userProfile.setDob(userProfileDTO.getDob());
+        userProfile.setLanguage(userProfileDTO.getLanguage());
+        userProfile.setEducation(userProfileDTO.getEducation());
 
-        // Set profile details from the input 'profile'
-        existingProfile.setLocation(profile.getLocation());
-        existingProfile.setMobileNumber(profile.getMobileNumber());
-        existingProfile.setExperience(profile.getExperience());
-        existingProfile.setSkill(profile.getSkill());
-        existingProfile.setGender(profile.getGender());
-        existingProfile.setDob(profile.getDob());
-        existingProfile.setLanguage(profile.getLanguage());
-        existingProfile.setEducation(profile.getEducation());
-
-        // Save resume file
-        if (resumeFile != null && !resumeFile.isEmpty()) {
-            String filename = UUID.randomUUID() + "_" + resumeFile.getOriginalFilename();
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);  // Create the directory if it does not exist
-            }
-
-            Path filePath = uploadPath.resolve(filename);  // Create the file path
-            Files.copy(resumeFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);  // Save the file
-            existingProfile.setResume(filePath.toString());  // Set the file path in the profile
-        }
-
-        // Save and return the updated or newly created profile
-        return profileRepo.save(existingProfile);
+        // Save the profile (either updated or newly created)
+        return profileRepo.save(userProfile);
     }
 
 }
