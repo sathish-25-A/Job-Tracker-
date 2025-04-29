@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import API from '../../services/api'; // Your API helper
+import API from '../../services/api';
 import Navbar from '../../Components/Navbar';
-import './JobRequestList.css'; // Optional: Create CSS for styling
+import './JobRequestList.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const JobRequestList = () => {
+const JobRequest = () => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState('');
 
@@ -13,7 +15,7 @@ const JobRequestList = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await API.get('/admin/applications'); // Backend endpoint
+      const response = await API.get('/admin/jobs/applications');
       setApplications(response.data);
     } catch (err) {
       setError('Failed to fetch applications.');
@@ -23,11 +25,51 @@ const JobRequestList = () => {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      await API.put(`/admin/applications/${applicationId}/status`, { status: newStatus });
-      fetchApplications(); // Refresh list after update
+      await API.put(`/admin/jobs/status/${applicationId}?status=${newStatus}`);
+      toast.success(`Application ${newStatus.toLowerCase()}!`, {
+        position: 'top-right',
+        autoClose: 2000,
+      });
+      fetchApplications();
     } catch (err) {
+      toast.error('Failed to update status.', { position: 'top-right' });
       console.error('Error updating application status', err);
     }
+  };
+
+  const renderSection = (statusLabel, statusType) => {
+    const filteredApps = applications.filter(app => app.status === statusType);
+    return (
+      <div className="status-section">
+        <h3>{statusLabel}</h3>
+        {filteredApps.length === 0 ? (
+          <p>No {statusLabel.toLowerCase()} applications</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Applicant Name</th>
+                <th>Job Title</th>
+                <th>Change Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredApps.map((app) => (
+                <tr key={app.id}>
+                  <td>{app.userName}</td>
+                  <td>{app.jobTitle}</td>
+                  <td>
+                    <button onClick={() => handleStatusChange(app.id, 'ACCEPTED')}>Accept</button>
+                    <button onClick={() => handleStatusChange(app.id, 'REJECTED')}>Reject</button>
+                    <button onClick={() => handleStatusChange(app.id, 'PENDING')}>Pending</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    );
   };
 
   if (error) {
@@ -43,33 +85,13 @@ const JobRequestList = () => {
       <Navbar />
       <div className="job-request-list">
         <h2>Job Requests</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Applicant Name</th>
-              <th>Job Title</th>
-              <th>Current Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.map((application) => (
-              <tr key={application.id}>
-                <td>{application.userName}</td>
-                <td>{application.jobTitle}</td>
-                <td>{application.status}</td>
-                <td>
-                  <button onClick={() => handleStatusChange(application.id, 'ACCEPTED')}>Accept</button>
-                  <button onClick={() => handleStatusChange(application.id, 'REJECTED')}>Reject</button>
-                  <button onClick={() => handleStatusChange(application.id, 'PENDING')}>Pending</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {renderSection('Pending Applications', 'PENDING')}
+        {renderSection('Accepted Applications', 'ACCEPTED')}
+        {renderSection('Rejected Applications', 'REJECTED')}
       </div>
+      <ToastContainer />
     </div>
   );
 };
 
-export default JobRequestList;
+export default JobRequest;
