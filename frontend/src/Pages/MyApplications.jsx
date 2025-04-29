@@ -1,33 +1,29 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../services/api"; // 👈 Use your custom API service
 import Navbar from "../Components/Navbar";
 
 const MyApplications = () => {
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [jobs, setJobs] = useState([]);
 
-  // Fetch applied jobs and job details
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch applied jobs from the applied-jobs API
-        const appliedJobsResponse = await axios.get(
-          "http://localhost:3001/applied-jobs"
-        );
-        setAppliedJobs(appliedJobsResponse.data); // Store applied jobs in state
+        // Fetch applied jobs (with status)
+        const appliedJobsResponse = await API.get("/applied-jobs");
+        setAppliedJobs(appliedJobsResponse.data);
 
-        // Fetch jobs from the jobs API
-        const jobsResponse = await axios.get("http://localhost:3001/jobs");
-        setJobs(jobsResponse.data); // Store job details in state
+        // Fetch job listings
+        const jobsResponse = await API.get("/jobs");
+        setJobs(jobsResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []); // Empty dependency array to run once on component mount
+  }, []);
 
-  // Find job details based on jobId
   const getJobDetails = (jobId) => {
     return jobs.find((job) => job.id === jobId);
   };
@@ -39,25 +35,25 @@ const MyApplications = () => {
       {appliedJobs && appliedJobs.length > 0 ? (
         <ul>
           {appliedJobs.map((appliedJob) => {
-            // Find the job details using the jobId from appliedJob
             const job = getJobDetails(appliedJob.jobId);
 
             return (
               <li key={appliedJob.id}>
-                {/* Display job role, company, and application date */}
-                {job && (
+                {job ? (
                   <>
                     <strong>{job.role}</strong> at {job.company} <br />
-                    Application Date:{" "}
-                    {new Date(appliedJob.applicationDate).toLocaleString()}
+                    Application Date: {new Date(appliedJob.applicationDate).toLocaleString()} <br />
+                    Status: <strong>{appliedJob.status}</strong>
                   </>
+                ) : (
+                  <p>Job details not found</p>
                 )}
               </li>
             );
           })}
         </ul>
       ) : (
-        <p>No applications found.</p> // Message if no applied jobs exist
+        <p>No applications found.</p>
       )}
     </div>
   );
