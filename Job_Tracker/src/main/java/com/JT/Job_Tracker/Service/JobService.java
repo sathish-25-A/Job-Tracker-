@@ -76,7 +76,6 @@ public class JobService {
         return userRepo.findAll();
     }
 
-    // Get user application stats
     public UserApplicationStatus getUserApplicationStatsByUserId(UUID userId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -92,12 +91,29 @@ public class JobService {
                 .count();
 
         UserApplicationStatus status = new UserApplicationStatus();
+
+        // Basic info
         status.setUserId(user.getId());
         status.setName(user.getName());
         status.setEmail(user.getEmail());
+
+        // Stats
         status.setAppliedJobs(totalApplications);
         status.setAcceptedJobs(acceptedApplications);
         status.setRejectedJobs(rejectedApplications);
+
+        // Profile
+        status.setLocation(user.getLocation());
+        status.setMobileNumber(user.getMobileNumber());
+        status.setExperience(user.getExperience());
+        status.setSkill(user.getSkill());
+        status.setGender(user.getGender());
+        status.setDob(user.getDob());
+        status.setLanguage(user.getLanguage());
+        status.setEducation(user.getEducation());
+
+        // Resume
+        status.setResume(user.getResume());
 
         return status;
     }
