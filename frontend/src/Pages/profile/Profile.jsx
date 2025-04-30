@@ -10,18 +10,83 @@ const Profile = () => {
   const [user, setUser] = useState(storedUser);
 
   useEffect(() => {
+    if (!storedUser || !storedUser.userId) {
+      console.log("No user logged in or userId not available");
+      return; // Exit early if no user is logged in
+    }
+  
+    // Only fetch profile if it's not already fetched
     const fetchProfile = async () => {
       try {
-        const response = await API.get(`/user/jobs/profile/${user.userId}`);
+        const response = await API.get(`/user/jobs/profile/${storedUser.userId}`);
         setUser(response.data);
-        updateUser(response.data); // sync with context
+        updateUser(response.data); // Sync with context
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
     };
+  
+    // Fetch profile only if user is logged in and storedUser has changed
+    if (!user) {
+      fetchProfile(); 
+    }
+  }, [storedUser, user, updateUser]); // Now `user` is part of the dependency array
+  
+  
 
-    fetchProfile();
-  }, []);
+  // Function to download resume
+  const downloadResume = async () => {
+    if (!storedUser || !storedUser.userId) {
+      console.error("User is not logged in or userId is not available");
+      return;
+    }
+  
+    const resumeUrl = `${API.defaults.baseURL}/user/jobs/profile/${
+      storedUser.userId
+    }/resume/${storedUser.resume.split("\\").pop()}`;
+  
+    console.log("Constructed Resume URL:", resumeUrl); // Log the complete resume URL
+  
+    // Check for the Authorization token to ensure it is available
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      console.error("No Authorization token found!");
+      return;
+    }
+    
+    console.log("Authorization Token:", authToken); // Log the token (be cautious with sensitive info in production)
+  
+    try {
+      const response = await fetch(resumeUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+  
+      console.log("Response Status:", response.status); // Log the status code of the response
+  
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = storedUser.resume.split("\\").pop(); // Name of the resume file
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Failed to download resume, status:", response.status);
+        // Log more detailed response content for debugging
+        const responseBody = await response.text();
+        console.error("Response Body:", responseBody);
+      }
+    } catch (error) {
+      console.error("Error downloading resume:", error);
+    }
+  };
+  
+  
+  
 
   if (!user) {
     return <p>You are not logged in!</p>;
@@ -67,16 +132,19 @@ const Profile = () => {
             <strong>Resume:</strong>{" "}
             {user.resume ? (
               <>
-                <a
-                  href={`http://localhost:8080/uploads/${user.resume
-                    .split("\\")
-                    .pop()}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="#" onClick={downloadResume}>
                   Download Resume
                 </a>{" "}
-                ({user.resume.split("\\").pop()})
+                (
+                {
+                  user.resume
+                    .split("\\")
+                    .pop()
+                    .split("_")
+                    .slice(1) // removes the UUID prefix
+                    .join("_") // rejoins the rest of the parts
+                }
+                )
               </>
             ) : (
               "Not Uploaded"

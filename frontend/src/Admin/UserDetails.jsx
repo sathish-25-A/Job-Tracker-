@@ -34,6 +34,41 @@ const UserDetail = () => {
     fetchUserDetails();
   }, [userId]);
 
+  // Function to download resume (same as Profile.js)
+  const downloadResume = async () => {
+    if (!userDetails || !userDetails.userId) {
+      console.error("User data is not available or userId is missing");
+      return;
+    }
+
+    const resumeUrl = `${API.defaults.baseURL}/user/jobs/profile/${userDetails.userId}/resume/${userDetails.resume.split("\\").pop()}`;
+
+    console.log("Constructed Resume URL:", resumeUrl); // Log the complete resume URL
+
+    try {
+      const response = await fetch(resumeUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = userDetails.resume.split("\\").pop(); // Resume file name
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Failed to download resume");
+      }
+    } catch (error) {
+      console.error("Error downloading resume:", error);
+    }
+  };
+
   if (error) {
     return <div className="error-message">{error}</div>;
   }
@@ -72,6 +107,27 @@ const UserDetail = () => {
           </p>
           <p>
             <strong>Date of Birth:</strong> {userDetails.dob || "Not Provided"}
+          </p>
+          <p>
+            <strong>Language:</strong> {userDetails.language || "Not Provided"}
+          </p>
+          <p>
+            <strong>Education:</strong> {userDetails.education || "Not Provided"}
+          </p>
+
+          {/* Display Resume Download Link */}
+          <p>
+            <strong>Resume:</strong> 
+            {userDetails.resume ? (
+              <>
+                <a href="#" onClick={downloadResume}>
+                  Download Resume
+                </a> (
+                {userDetails.resume.split("\\").pop().split("_").slice(1).join("_")})
+              </>
+            ) : (
+              "Not Uploaded"
+            )}
           </p>
         </div>
 
