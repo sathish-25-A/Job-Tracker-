@@ -76,7 +76,16 @@ const Profile = () => {
                 >
                   Download Resume
                 </a>{" "}
-                ({user.resume.split("\\").pop()})
+                (
+                {
+                  user.resume
+                    .split("\\")
+                    .pop()
+                    .split("_")
+                    .slice(1) // removes the UUID prefix
+                    .join("_") // rejoins the rest of the parts
+                }
+                )
               </>
             ) : (
               "Not Uploaded"

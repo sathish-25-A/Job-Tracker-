@@ -54,18 +54,18 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.name || !formData.email) {
       alert("Name and Email are required!");
       return;
     }
-  
+
     const token = localStorage.getItem("authToken");
     if (!token || !user?.userId) {
       alert("Authentication error.");
       return;
     }
-  
+
     setIsLoading(true);
     try {
       // Update user details first
@@ -78,20 +78,20 @@ const EditProfile = () => {
           },
         }
       );
-  
+
       const newUser = {
         ...updatedProfile,
-        resume: updatedProfile.resume || "",  // Ensure resumePath is included
+        resume: updatedProfile.resume || "", // Ensure resumePath is included
       };
-  
+
       updateUser(newUser); // Update the user in context
       setFormData(newUser);
-  
+
       if (resume) {
         // Create FormData to send file
         const resumeFormData = new FormData();
         resumeFormData.append("file", resume);
-  
+
         // Upload resume
         await API.post(
           `/user/jobs/profile/${user.userId}/upload-resume`,
@@ -103,7 +103,7 @@ const EditProfile = () => {
             },
           }
         );
-  
+
         alert("Profile and resume updated successfully!");
       } else {
         alert("Profile updated successfully!");
@@ -115,8 +115,6 @@ const EditProfile = () => {
       setIsLoading(false);
     }
   };
-  
-  
 
   return (
     <div>
@@ -127,9 +125,16 @@ const EditProfile = () => {
           <p>Updating profile...</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            {[ 
-              "name", "email", "mobileNumber", "location", "experience", "skill", 
-              "gender", "language", "education"
+            {[
+              "name",
+              "email",
+              "mobileNumber",
+              "location",
+              "experience",
+              "skill",
+              "gender",
+              "language",
+              "education",
             ].map((field) => (
               <input
                 key={field}
@@ -155,8 +160,11 @@ const EditProfile = () => {
             />
 
             {/* Display the file name if a file is selected */}
-            <p>{uploadedFileName}</p>
-
+            <p>
+              {uploadedFileName
+                ? uploadedFileName.split("_").slice(1).join("_")
+                : "No file chosen"}
+            </p>
             <button type="submit">Save Changes</button>
           </form>
         )}
