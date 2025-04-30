@@ -51,22 +51,32 @@ public class AuthController {
     //Method to login 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        // Authenticate user credentials
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
+        // Fetch the user from the repository
         User user = userRepo.findByEmail(request.getEmail()).orElseThrow();
-        
+
+        // Prepare claims for the JWT token
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole());
         claims.put("name", user.getName());
-        claims.put("email",user.getEmail());
-        claims.put("id", user.getId().toString()); // ✅ Add this
+        claims.put("email", user.getEmail());
+        claims.put("id", user.getId().toString());
 
+        // Generate JWT token with claims
+        String token = jwtUtil.generateToken(claims, user);
 
-        String token = jwtUtil.generateToken(claims, user); 
-
-        return ResponseEntity.ok(new LoginResponse(token));
+        // Return both token and user info in the response
+        return ResponseEntity.ok(new LoginResponse(
+            token,
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole()
+        ));
     }
 
 

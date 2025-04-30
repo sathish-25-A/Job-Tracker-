@@ -50,23 +50,41 @@ const UserDetail = () => {
 
         <div className="user-info">
           <p>
-            <strong>Name:</strong> {userDetails.name}
+            <strong>Name:</strong> {userDetails.name || "Not Provided"}
           </p>
           <p>
-            <strong>Email:</strong> {userDetails.email}
+            <strong>Email:</strong> {userDetails.email || "Not Provided"}
+          </p>
+          <p>
+            <strong>Mobile:</strong> {userDetails.mobileNumber || "Not Provided"}
+          </p>
+          <p>
+            <strong>Location:</strong> {userDetails.location || "Not Provided"}
+          </p>
+          <p>
+            <strong>Experience:</strong> {userDetails.experience || "Not Provided"}
+          </p>
+          <p>
+            <strong>Skills:</strong> {userDetails.skills || "Not Provided"}
+          </p>
+          <p>
+            <strong>Gender:</strong> {userDetails.gender || "Not Provided"}
+          </p>
+          <p>
+            <strong>Date of Birth:</strong> {userDetails.dob || "Not Provided"}
           </p>
         </div>
 
         {/* Display applied jobs stats */}
         <div className="job-stats">
           <p>
-            <strong>Jobs Applied:</strong> {userDetails.appliedJobs}
+            <strong>Jobs Applied:</strong> {userDetails.appliedJobs || 0}
           </p>
           <p>
-            <strong>Jobs Accepted:</strong> {userDetails.acceptedJobs}
+            <strong>Jobs Accepted:</strong> {userDetails.acceptedJobs || 0}
           </p>
           <p>
-            <strong>Jobs Rejected:</strong> {userDetails.rejectedJobs}
+            <strong>Jobs Rejected:</strong> {userDetails.rejectedJobs || 0}
           </p>
         </div>
       </div>
