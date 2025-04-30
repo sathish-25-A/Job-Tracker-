@@ -72,16 +72,7 @@ public class UserService {
         return filePath.toString();
     }
 
-    public byte[] downloadResume(UUID userId) throws IOException {
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        String filePath = user.getResume();
 
-        if (filePath == null || filePath.isEmpty()) {
-            throw new RuntimeException("Resume not uploaded");
-        }
-
-        return Files.readAllBytes(Paths.get(filePath));
-    }
 
     public User getUserById(UUID userId) {
         return userRepo.findById(userId)

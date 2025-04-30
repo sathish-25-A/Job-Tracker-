@@ -63,7 +63,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
     @PostMapping("/profile/{userId}/upload-resume")
     public ResponseEntity<String> uploadResume(
             @PathVariable UUID userId,
@@ -76,7 +75,16 @@ public class UserController {
         }
     }
 
+	//Method to download resume by admin
+  	@GetMapping("/profile/download-resume/{userId}")
+  	public ResponseEntity<byte[]> downloadResume(@PathVariable UUID userId) throws IOException {
+  	    byte[] resumeData = jobService.downloadResume(userId);
 
+  	    return ResponseEntity.ok()
+  	            .header("Content-Disposition", "attachment; filename=resume.pdf")
+  	            .header("Content-Type", "application/pdf")
+  	            .body(resumeData);
+  	}
 
 
 
