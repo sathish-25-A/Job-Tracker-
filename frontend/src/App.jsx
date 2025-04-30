@@ -5,9 +5,9 @@ import Login from "./Pages/Login";
 import Home from "./Pages/Home";
 import SignUp from "./Pages/SignUp";
 import PrivateRoute from "./Components/PrivateRoute";
-import Profile from "./Pages/Profile";
+import Profile from "./Pages/profile/Profile";
 import JobDetails from "./Pages/JobDetails";
-import MyApplications from "./Pages/MyApplications";
+import MyApplications from "./Pages/Application/MyApplications";
 import JobApplicationForm from "./Components/JobApplicationForm";
 import JobList from "./Pages/JobList";
 import AdminDashboard from "./Admin/AdminDashboard";
@@ -16,6 +16,7 @@ import ManageJobs from "./Admin/ManageJobs";
 import ManageUsers from "./Admin/ManageUsers";
 import UserDetail from "./Admin/UserDetails";
 import JobRequest from "./Admin/JobRequest/JobRequest"; // ✅ Import new JobRequest page
+import EditProfile from "./Pages/profile/EditProfile";
 
 function App() {
   return (
@@ -116,6 +117,14 @@ function App() {
           element={
             <PrivateRoute>
               <UserDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/edit-profile"
+          element={
+            <PrivateRoute>
+              <EditProfile />
             </PrivateRoute>
           }
         />
