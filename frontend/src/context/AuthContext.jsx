@@ -1,77 +1,76 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom"; // 👈 Use React Router navigation
 
-// Create a context to share user and authentication state
 const AuthContext = createContext();
-
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
-// Check if the token is expired
 const isTokenExpired = (token) => {
-  if (!token) return true; // If no token, consider it expired
-  const decodedToken = jwt_decode(token);
-  const currentTime = Date.now() / 1000; // Current time in seconds
-  return decodedToken.exp < currentTime; // Compare expiration time
+  if (!token) return true;
+  try {
+    const decodedToken = jwt_decode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  } catch (err) {
+    return true;
+  }
 };
 
-// AuthProvider component to wrap the application and provide context
 export const AuthProvider = ({ children }) => {
-  // Set user state from localStorage or null if not found
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // Set token state from localStorage or null if not found
   const [token, setToken] = useState(() => localStorage.getItem("authToken"));
+  const navigate = useNavigate(); // 👈 useNavigate hook from React Router
 
-  // Check token expiration on each token change
   useEffect(() => {
-    if (isTokenExpired(token)) {
-      logout(); // If token is expired, log out
-    }
-  }, [token]);
+    const checkTokenValidity = () => {
+      if (isTokenExpired(token)) {
+        logout();
+        navigate("/login"); // 👈 React Router navigation (no reload)
+      }
+    };
 
-  // Sync user and token with localStorage on any change
+    checkTokenValidity();
+  }, []); // ✅ Only runs once on initial mount
+
   useEffect(() => {
     if (user && token) {
-      localStorage.setItem("user", JSON.stringify(user)); // Store user in localStorage
-      localStorage.setItem("authToken", token); // Store auth token in localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("authToken", token);
     }
   }, [user, token]);
 
-  // Login function that sets the user and token
   const login = (userData, authToken) => {
-    const decodedToken = jwt_decode(authToken); // Decode JWT token to get user info
+    const decodedToken = jwt_decode(authToken);
     const updatedUser = {
       ...userData,
-      userId: decodedToken.id, // Add userId from decoded token
+      userId: decodedToken.id,
     };
-    setUser(updatedUser); // Set the user in state
-    setToken(authToken); // Set the token in state
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Store user in localStorage
-    localStorage.setItem("authToken", authToken); // Store auth token in localStorage
+    setUser(updatedUser);
+    setToken(authToken);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    localStorage.setItem("authToken", authToken);
   };
 
-  // Logout function that clears user and token from state and localStorage
   const logout = () => {
-    setUser(null); // Clear user state
-    setToken(null); // Clear token state
-    localStorage.removeItem("authToken"); // Remove token from localStorage
-    localStorage.removeItem("user"); // Remove user from localStorage
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
   };
 
-  // Update user function that merges new data into the existing user state
   const updateUser = (updatedData) => {
-    const updatedUser = { ...user, ...updatedData }; // Merge updated data with current user
-    setUser(updatedUser); // Update user state
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Update user in localStorage
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
-      {children} {/* Render children components */}
+      {children}
     </AuthContext.Provider>
   );
 };

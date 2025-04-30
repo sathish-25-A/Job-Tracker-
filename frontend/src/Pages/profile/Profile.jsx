@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
+import API from "../../services/api";
 import "./Profile.css";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user: storedUser, updateUser } = useAuth();
+  const [user, setUser] = useState(storedUser);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await API.get("/user/jobs/profile");
+        setUser(response.data);
+        updateUser(response.data); // sync with context
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   if (!user) {
     return <p>You are not logged in!</p>;
@@ -25,6 +41,8 @@ const Profile = () => {
           <p><strong>Skills:</strong> {user.skill || "Not Provided"}</p>
           <p><strong>Gender:</strong> {user.gender || "Not Provided"}</p>
           <p><strong>Date of Birth:</strong> {user.dob || "Not Provided"}</p>
+          <p><strong>Language:</strong> {user.language || "Not Provided"}</p>
+          <p><strong>Education:</strong> {user.education || "Not Provided"}</p>
 
           <Link to="/edit-profile" className="edit-profile-btn">
             Edit Profile

@@ -5,6 +5,7 @@ import Navbar from "../../Components/Navbar";
 
 const EditProfile = () => {
   const { user, updateUser } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +16,8 @@ const EditProfile = () => {
     gender: "",
     dob: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -38,73 +41,79 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("authToken");
-    if (!token || !user?.userId) {
-      alert("Authentication error."); 
+
+    // ✅ Basic validation
+    if (!formData.name || !formData.email) {
+      alert("Name and Email are required!");
       return;
     }
-  
+
+    const token = localStorage.getItem("authToken");
+    if (!token || !user?.userId) {
+      alert("Authentication error.");
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      // 1) Update on the server
       const { data: updatedProfile } = await API.put(
         `/user/jobs/profile/update/${user.userId}`,
         formData,
-        { headers: { "Authorization": `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      console.log("Profile updated successfully:", updatedProfile);
-  
-      // 2) Flatten the response properly and coalesce null/undefined -> ""
+
       const newUser = {
-        userId:      updatedProfile.user.id,
-        name:        updatedProfile.user.name || "",
-        email:       updatedProfile.user.email || "",
-        mobileNumber:updatedProfile.mobileNumber   ?? "",
-        location:    updatedProfile.location       ?? "",
-        experience:  updatedProfile.experience     ?? "",
-        skill:       updatedProfile.skill          ?? "",
-        gender:      updatedProfile.gender         ?? "",
-        dob:         updatedProfile.dob            ?? "",
-        role:        updatedProfile.user.role      || "",
+        userId: updatedProfile.id,
+        name: updatedProfile.name || "",
+        email: updatedProfile.email || "",
+        mobileNumber: updatedProfile.mobileNumber ?? "",
+        location: updatedProfile.location ?? "",
+        experience: updatedProfile.experience ?? "",
+        skill: updatedProfile.skill ?? "",
+        gender: updatedProfile.gender ?? "",
+        dob: updatedProfile.dob ?? "",
+        role: updatedProfile.role || "",
       };
-  
-      // 3) Update the context (and localStorage)
+
       updateUser(newUser);
-  
-      // 4) Mirror into local form state so the inputs re-render with the new values
       setFormData(newUser);
-  
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile.");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
     <div>
       <Navbar />
       <div className="edit-profile-form">
         <h2>Edit Profile</h2>
-        <form onSubmit={handleSubmit}>
-          {["name","email","mobileNumber","location","experience","skill","gender"].map((field) => (
+        {isLoading ? (
+          <p>Updating profile...</p> // ⏳ You can replace this with a spinner
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {["name", "email", "mobileNumber", "location", "experience", "skill", "gender"].map((field) => (
+              <input
+                key={field}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                required={["name", "email"].includes(field)}
+              />
+            ))}
             <input
-              key={field}
-              name={field}
-              value={formData[field]}
+              name="dob"
+              type="date"
+              value={formData.dob}
               onChange={handleChange}
-              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
             />
-          ))}
-          <input
-            name="dob"
-            type="date"
-            value={formData.dob}
-            onChange={handleChange}
-          />
-          <button type="submit">Save Changes</button>
-        </form>
+            <button type="submit">Save Changes</button>
+          </form>
+        )}
       </div>
     </div>
   );
