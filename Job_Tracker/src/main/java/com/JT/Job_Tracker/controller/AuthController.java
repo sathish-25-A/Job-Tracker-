@@ -1,6 +1,5 @@
 package com.JT.Job_Tracker.controller;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,52 +25,50 @@ import com.JT.Job_Tracker.repo.UserRepo;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/auth")
 public class AuthController {
-	
 
-    @Autowired 
-    private AuthenticationManager authManager;
-    @Autowired 
-    private JwtUtil jwtUtil;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired 
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private AuthenticationManager authManager;
+	@Autowired
+	private JwtUtil jwtUtil;
+	@Autowired
+	private UserRepo userRepo;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    //Method to register a user
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        User user = new User();
-        user.setEmail(request.email);
-        user.setName(request.name);
-        user.setPassword(passwordEncoder.encode(request.password));
-        user.setRole(request.role);
-        userRepo.save(user);
-        return ResponseEntity.ok("Registered successfully");
-    }
-    //Method to login 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+	// Method to register a user
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+		User user = new User();
+		user.setEmail(request.email);
+		user.setName(request.name);
+		user.setPassword(passwordEncoder.encode(request.password));
+		user.setRole(request.role);
+		userRepo.save(user);
+		return ResponseEntity.ok("Registered successfully");
+	}
 
-        User user = userRepo.findByEmail(request.getEmail()).orElseThrow();
-        
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole());
-        claims.put("name", user.getName());
-        claims.put("email",user.getEmail());
-        claims.put("id", user.getId().toString()); // ✅ Add this
+	// Method to login
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+		// Authenticate user credentials
+		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
+		// Fetch the user from the repository
+		User user = userRepo.findByEmail(request.getEmail()).orElseThrow();
 
-        String token = jwtUtil.generateToken(claims, user); 
+		// Prepare claims for the JWT token
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("role", user.getRole());
+		claims.put("name", user.getName());
+		claims.put("email", user.getEmail());
+		claims.put("id", user.getId().toString());
 
-        return ResponseEntity.ok(new LoginResponse(token));
-    }
+		// Generate JWT token with claims
+		String token = jwtUtil.generateToken(claims, user);
 
-
-
-	
-	
+		// Return both token and user info in the response
+		return ResponseEntity
+				.ok(new LoginResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole()));
+	}
 
 }
