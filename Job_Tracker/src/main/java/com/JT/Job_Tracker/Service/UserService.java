@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.JT.Job_Tracker.dto.UpdateUserRequest;
 import com.JT.Job_Tracker.model.User;
 import com.JT.Job_Tracker.repo.UserRepo;
-
 @Service
 public class UserService {
 
@@ -22,7 +21,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final String UPLOAD_DIR = "C:\\Users\\tmachine\\Desktop"; // Change as needed
+    private static final String UPLOAD_DIR = System.getProperty("user.home") + "/JobTrackerResumes";
 
     public User updateUserDetails(String token, UpdateUserRequest request) {
         String email = extractEmailFromJwt(token);
@@ -57,8 +56,14 @@ public class UserService {
     public String uploadResume(UUID userId, MultipartFile file) throws IOException {
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        // Ensure directory exists
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filePath = uploadPath.resolve(fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         user.setResume(filePath.toString());
@@ -77,10 +82,9 @@ public class UserService {
 
         return Files.readAllBytes(Paths.get(filePath));
     }
-    
+
     public User getUserById(UUID userId) {
         return userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
     }
-
 }
