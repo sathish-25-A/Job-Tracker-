@@ -15,8 +15,12 @@ const EditProfile = () => {
     skill: "",
     gender: "",
     dob: "",
+    language: "",
+    education: "",
   });
 
+  const [resume, setResume] = useState(null);
+  const [uploadedFileName, setUploadedFileName] = useState(""); // Track uploaded file name
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -30,7 +34,10 @@ const EditProfile = () => {
         skill: user.skill || "",
         gender: user.gender || "",
         dob: user.dob || "",
+        language: user.language || "",
+        education: user.education || "",
       });
+      setUploadedFileName(user.resume || ""); // Correct
     }
   }, [user]);
 
@@ -39,45 +46,68 @@ const EditProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setResume(file);
+    setUploadedFileName(file ? file.name : "No file chosen"); // Update the file name
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // ✅ Basic validation
+  
     if (!formData.name || !formData.email) {
       alert("Name and Email are required!");
       return;
     }
-
+  
     const token = localStorage.getItem("authToken");
     if (!token || !user?.userId) {
       alert("Authentication error.");
       return;
     }
-
+  
     setIsLoading(true);
     try {
+      // Update user details first
       const { data: updatedProfile } = await API.put(
         `/user/jobs/profile/update/${user.userId}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-
+  
       const newUser = {
-        userId: updatedProfile.id,
-        name: updatedProfile.name || "",
-        email: updatedProfile.email || "",
-        mobileNumber: updatedProfile.mobileNumber ?? "",
-        location: updatedProfile.location ?? "",
-        experience: updatedProfile.experience ?? "",
-        skill: updatedProfile.skill ?? "",
-        gender: updatedProfile.gender ?? "",
-        dob: updatedProfile.dob ?? "",
-        role: updatedProfile.role || "",
+        ...updatedProfile,
+        resume: updatedProfile.resume || "",  // Ensure resumePath is included
       };
-
-      updateUser(newUser);
+  
+      updateUser(newUser); // Update the user in context
       setFormData(newUser);
-      alert("Profile updated successfully!");
+  
+      if (resume) {
+        // Create FormData to send file
+        const resumeFormData = new FormData();
+        resumeFormData.append("file", resume);
+  
+        // Upload resume
+        await API.post(
+          `/user/jobs/profile/${user.userId}/upload-resume`,
+          resumeFormData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+  
+        alert("Profile and resume updated successfully!");
+      } else {
+        alert("Profile updated successfully!");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile.");
@@ -85,6 +115,8 @@ const EditProfile = () => {
       setIsLoading(false);
     }
   };
+  
+  
 
   return (
     <div>
@@ -92,10 +124,13 @@ const EditProfile = () => {
       <div className="edit-profile-form">
         <h2>Edit Profile</h2>
         {isLoading ? (
-          <p>Updating profile...</p> // ⏳ You can replace this with a spinner
+          <p>Updating profile...</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            {["name", "email", "mobileNumber", "location", "experience", "skill", "gender"].map((field) => (
+            {[ 
+              "name", "email", "mobileNumber", "location", "experience", "skill", 
+              "gender", "language", "education"
+            ].map((field) => (
               <input
                 key={field}
                 name={field}
@@ -105,12 +140,23 @@ const EditProfile = () => {
                 required={["name", "email"].includes(field)}
               />
             ))}
+
             <input
               name="dob"
               type="date"
               value={formData.dob}
               onChange={handleChange}
             />
+
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileChange}
+            />
+
+            {/* Display the file name if a file is selected */}
+            <p>{uploadedFileName}</p>
+
             <button type="submit">Save Changes</button>
           </form>
         )}

@@ -71,7 +71,12 @@ public class UserService {
 
         return filePath.toString();
     }
-
+    
+ // Method to retrieve the file path from the database
+    public Path getResumeFilePath(UUID userId, String filename) {
+        // Ensure the file is located in the correct directory
+        return Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+    }
 
 
     public User getUserById(UUID userId) {
