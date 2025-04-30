@@ -65,15 +65,19 @@ const Profile = () => {
           </p>
           <p>
             <strong>Resume:</strong>{" "}
-            {user.resumePath ? (
-              <a
-                href={user.resumePath}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="resume-link"
-              >
-                View Resume
-              </a>
+            {user.resume ? (
+              <>
+                <a
+                  href={`http://localhost:8080/uploads/${user.resume
+                    .split("\\")
+                    .pop()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download Resume
+                </a>{" "}
+                ({user.resume.split("\\").pop()})
+              </>
             ) : (
               "Not Uploaded"
             )}

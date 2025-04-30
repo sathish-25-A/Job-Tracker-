@@ -71,17 +71,13 @@ public class UserService {
 
         return filePath.toString();
     }
-
-    public byte[] downloadResume(UUID userId) throws IOException {
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        String filePath = user.getResume();
-
-        if (filePath == null || filePath.isEmpty()) {
-            throw new RuntimeException("Resume not uploaded");
-        }
-
-        return Files.readAllBytes(Paths.get(filePath));
+    
+ // Method to retrieve the file path from the database
+    public Path getResumeFilePath(UUID userId, String filename) {
+        // Ensure the file is located in the correct directory
+        return Paths.get(UPLOAD_DIR).resolve(filename).normalize();
     }
+
 
     public User getUserById(UUID userId) {
         return userRepo.findById(userId)

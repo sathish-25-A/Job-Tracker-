@@ -20,6 +20,7 @@ const EditProfile = () => {
   });
 
   const [resume, setResume] = useState(null);
+  const [uploadedFileName, setUploadedFileName] = useState(""); // Track uploaded file name
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ const EditProfile = () => {
         language: user.language || "",
         education: user.education || "",
       });
+      setUploadedFileName(user.resume || ""); // Correct
     }
   }, [user]);
 
@@ -44,22 +46,29 @@ const EditProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setResume(file);
+    setUploadedFileName(file ? file.name : "No file chosen"); // Update the file name
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formData.name || !formData.email) {
       alert("Name and Email are required!");
       return;
     }
-
+  
     const token = localStorage.getItem("authToken");
     if (!token || !user?.userId) {
       alert("Authentication error.");
       return;
     }
-
+  
     setIsLoading(true);
     try {
+      // Update user details first
       const { data: updatedProfile } = await API.put(
         `/user/jobs/profile/update/${user.userId}`,
         formData,
@@ -69,30 +78,21 @@ const EditProfile = () => {
           },
         }
       );
-
+  
       const newUser = {
-        userId: updatedProfile.id,
-        name: updatedProfile.name || "",
-        email: updatedProfile.email || "",
-        mobileNumber: updatedProfile.mobileNumber ?? "",
-        location: updatedProfile.location ?? "",
-        experience: updatedProfile.experience ?? "",
-        skill: updatedProfile.skill ?? "",
-        gender: updatedProfile.gender ?? "",
-        dob: updatedProfile.dob ?? "",
-        language: updatedProfile.language ?? "",
-        education: updatedProfile.education ?? "",
-        resumePath: updatedProfile.resumePath ?? "",
-        role: updatedProfile.role || "",
+        ...updatedProfile,
+        resume: updatedProfile.resume || "",  // Ensure resumePath is included
       };
-
-      updateUser(newUser);
+  
+      updateUser(newUser); // Update the user in context
       setFormData(newUser);
-
+  
       if (resume) {
+        // Create FormData to send file
         const resumeFormData = new FormData();
         resumeFormData.append("file", resume);
-
+  
+        // Upload resume
         await API.post(
           `/user/jobs/profile/${user.userId}/upload-resume`,
           resumeFormData,
@@ -103,6 +103,7 @@ const EditProfile = () => {
             },
           }
         );
+  
         alert("Profile and resume updated successfully!");
       } else {
         alert("Profile updated successfully!");
@@ -114,6 +115,8 @@ const EditProfile = () => {
       setIsLoading(false);
     }
   };
+  
+  
 
   return (
     <div>
@@ -124,16 +127,9 @@ const EditProfile = () => {
           <p>Updating profile...</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            {[
-              "name",
-              "email",
-              "mobileNumber",
-              "location",
-              "experience",
-              "skill",
-              "gender",
-              "language",
-              "education",
+            {[ 
+              "name", "email", "mobileNumber", "location", "experience", "skill", 
+              "gender", "language", "education"
             ].map((field) => (
               <input
                 key={field}
@@ -155,8 +151,11 @@ const EditProfile = () => {
             <input
               type="file"
               accept=".pdf,.doc,.docx"
-              onChange={(e) => setResume(e.target.files[0])}
+              onChange={handleFileChange}
             />
+
+            {/* Display the file name if a file is selected */}
+            <p>{uploadedFileName}</p>
 
             <button type="submit">Save Changes</button>
           </form>
