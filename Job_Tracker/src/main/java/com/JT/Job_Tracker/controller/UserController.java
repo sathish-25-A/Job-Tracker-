@@ -105,4 +105,14 @@ public class UserController {
             return ResponseEntity.status(500).body(null); // Internal server error
         }
     }
+	//Method to download resume by user
+  	@GetMapping("/profile/download-resume/{userId}")
+  	public ResponseEntity<byte[]> downloadResume(@PathVariable UUID userId) throws IOException {
+  	    byte[] resumeData = jobService.downloadResume(userId);
+
+  	    return ResponseEntity.ok()
+  	            .header("Content-Disposition", "attachment; filename=resume.pdf")
+  	            .header("Content-Type", "application/pdf")
+  	            .body(resumeData);
+  	}
 }
