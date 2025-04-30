@@ -1,6 +1,5 @@
 package com.JT.Job_Tracker.Service;
 
-import com.JT.Job_Tracker.config.*;
 import com.JT.Job_Tracker.dto.ApplicationInfo;
 import com.JT.Job_Tracker.dto.UserApplicationStatus;
 import com.JT.Job_Tracker.model.Application;
@@ -13,52 +12,58 @@ import com.JT.Job_Tracker.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class JobService {
-	
-	@Autowired
+    
+    @Autowired
     private JobRepo jobRepo;
-	
-	@Autowired
-	private UserRepo userRepo;
-	
-	@Autowired
-	private ApplicationRepo applicationRepo;
+    
+    @Autowired
+    private UserRepo userRepo;
+    
+    @Autowired
+    private ApplicationRepo applicationRepo;
 
-
-    // Method to get all jobs
+    // Get all jobs
     public List<Job> getAllJobs() {
         return jobRepo.findAll();
     }
 
-    // Method to get a job by ID
+    // Get job by ID
     public Job getJobById(UUID id) {
-        return jobRepo.findById(id).orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+        return jobRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
     }
 
-    // Method to save a new job
+    // Save a job
     public Job saveJob(Job job) {
         return jobRepo.save(job);
     }
 
-    // Method to update an existing job
+    // Update job
     public Job updateJob(UUID id, Job jobDetails) {
         Job existingJob = jobRepo.findById(id)
-                                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+        
         existingJob.setTitle(jobDetails.getTitle());
         existingJob.setDescription(jobDetails.getDescription());
         existingJob.setLocation(jobDetails.getLocation());
         existingJob.setCompany(jobDetails.getCompany());
         existingJob.setJobType(jobDetails.getJobType());
         existingJob.setSalary(jobDetails.getSalary());
+        
         return jobRepo.save(existingJob);
     }
 
-    // Method to delete a job
+    // Delete job
     public void deleteJob(UUID id) {
         if (!jobRepo.existsById(id)) {
             throw new RuntimeException("Job not found with id: " + id);
@@ -66,65 +71,77 @@ public class JobService {
         jobRepo.deleteById(id);
     }
 
-    //Method to list all users
-	public List<User> getAllUsers() {
-		return userRepo.findAll();
-	}
-	//Method to get User status by Id
-	public UserApplicationStatus getUserApplicationStatsByUserId(UUID userId) {
-	    User user = userRepo.findById(userId)
-	        .orElseThrow(() -> new RuntimeException("User not found"));
+    // Get all users
+    public List<User> getAllUsers() {
+        return userRepo.findAll();
+    }
 
-	    List<Application> applications = applicationRepo.findByUserId(userId);
+    // Get user application stats
+    public UserApplicationStatus getUserApplicationStatsByUserId(UUID userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-	    int totalApplications = applications.size();
-	    int acceptedApplications = (int) applications.stream()
-	            .filter(app -> "ACCEPTED".equalsIgnoreCase(app.getStatus()))
-	            .count();
-	    int rejectedApplications = (int) applications.stream()
-	            .filter(app -> "REJECTED".equalsIgnoreCase(app.getStatus()))
-	            .count();
+        List<Application> applications = applicationRepo.findByUserId(userId);
 
-	    UserApplicationStatus status = new UserApplicationStatus();
-	    status.setUserId(user.getId());
-	    status.setName(user.getName());
-	    status.setEmail(user.getEmail());
-	    status.setAppliedJobs(totalApplications);
-	    status.setAcceptedJobs(acceptedApplications);
-	    status.setRejectedJobs(rejectedApplications);
+        int totalApplications = applications.size();
+        int acceptedApplications = (int) applications.stream()
+                .filter(app -> "ACCEPTED".equalsIgnoreCase(app.getStatus()))
+                .count();
+        int rejectedApplications = (int) applications.stream()
+                .filter(app -> "REJECTED".equalsIgnoreCase(app.getStatus()))
+                .count();
 
-	    return status;
-	}
-	//Method to get all Applications
-	public List<ApplicationInfo> getAllApplications() {
-	    List<Application> applications = applicationRepo.findAll();
-	    List<ApplicationInfo> dtoList = new ArrayList<>();
+        UserApplicationStatus status = new UserApplicationStatus();
+        status.setUserId(user.getId());
+        status.setName(user.getName());
+        status.setEmail(user.getEmail());
+        status.setAppliedJobs(totalApplications);
+        status.setAcceptedJobs(acceptedApplications);
+        status.setRejectedJobs(rejectedApplications);
 
-	    for (Application app : applications) {
-	        ApplicationInfo dto = new ApplicationInfo();
-	        dto.setApplicationId(app.getId());
-	        dto.setUserId(app.getUser().getId());
-	        dto.setUserName(app.getUser().getName());
-	        dto.setJobId(app.getJob().getId());
-	        dto.setJobTitle(app.getJob().getTitle());
-	        dto.setStatus(app.getStatus());
+        return status;
+    }
 
-	        dtoList.add(dto);
-	    }
+    // Get all applications
+    public List<ApplicationInfo> getAllApplications() {
+        List<Application> applications = applicationRepo.findAll();
+        List<ApplicationInfo> dtoList = new ArrayList<>();
 
-	    return dtoList;
-	}
-	
-	//Method to update status of specific application
-	public Application updateStatus(UUID appId, String status) {
-	    Application application = applicationRepo.findById(appId)
-	            .orElseThrow(() -> new RuntimeException("Application not found"));
+        for (Application app : applications) {
+            ApplicationInfo dto = new ApplicationInfo();
+            dto.setApplicationId(app.getId());
+            dto.setUserId(app.getUser().getId());
+            dto.setUserName(app.getUser().getName());
+            dto.setJobId(app.getJob().getId());
+            dto.setJobTitle(app.getJob().getTitle());
+            dto.setStatus(app.getStatus());
+            dtoList.add(dto);
+        }
 
-	    application.setStatus(status.toUpperCase());
-	    return applicationRepo.save(application);
-	}
+        return dtoList;
+    }
 
+    // Update application status
+    public Application updateStatus(UUID appId, String status) {
+        Application application = applicationRepo.findById(appId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+        
+        application.setStatus(status.toUpperCase());
+        return applicationRepo.save(application);
+    }
 
+    // Download resume by admin
+    public byte[] downloadResume(UUID userId) throws IOException {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String filePath = user.getResume();
+        if (filePath == null || filePath.isEmpty()) {
+            throw new RuntimeException("Resume not uploaded yet");
+        }
+
+        Path path = Paths.get(filePath);
+        return Files.readAllBytes(path);
+    }
 
 }
-	

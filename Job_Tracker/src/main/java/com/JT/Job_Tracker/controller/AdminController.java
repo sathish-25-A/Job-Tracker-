@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,6 +76,18 @@ public class AdminController {
   	public Application updateStatus(@PathVariable UUID appId, @RequestParam String status) {
   		return jobService.updateStatus(appId,status);
   	}
+  	
+  	//Method to download resume by admin
+  	@GetMapping("/profile/download-resume/{userId}")
+  	public ResponseEntity<byte[]> downloadResume(@PathVariable UUID userId) throws IOException {
+  	    byte[] resumeData = jobService.downloadResume(userId);
+
+  	    return ResponseEntity.ok()
+  	            .header("Content-Disposition", "attachment; filename=resume.pdf")
+  	            .header("Content-Type", "application/pdf")
+  	            .body(resumeData);
+  	}
+
 
 
 }

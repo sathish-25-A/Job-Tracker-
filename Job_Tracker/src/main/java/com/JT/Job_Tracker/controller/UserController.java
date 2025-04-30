@@ -2,7 +2,6 @@ package com.JT.Job_Tracker.controller;
 
 import com.JT.Job_Tracker.model.Job;
 import com.JT.Job_Tracker.model.User;
-import com.JT.Job_Tracker.model.UserProfile;
 import java.io.IOException;
 
 
@@ -53,10 +52,22 @@ public class UserController {
     
   
     @PutMapping("/profile/update/{userId}")
-    public ResponseEntity<UserProfile> updateProfile(@PathVariable UUID userId, @RequestBody UserProfile userProfileDTO) {
-        UserProfile updatedProfile = userService.updateProfile(userId, userProfileDTO);
+    public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody User user) {
+        User updatedProfile = userService.updateProfile(userId, user);
         return ResponseEntity.ok(updatedProfile);
 
+    }
+
+    @PostMapping("/profile/{userId}/upload-resume")
+    public ResponseEntity<String> uploadResume(
+            @PathVariable UUID userId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            String filePath = userService.uploadResume(userId, file);
+            return ResponseEntity.ok("Resume uploaded successfully: " + filePath);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload resume: " + e.getMessage());
+        }
     }
 
 
