@@ -15,8 +15,11 @@ const EditProfile = () => {
     skill: "",
     gender: "",
     dob: "",
+    language: "",
+    education: "",
   });
 
+  const [resume, setResume] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -30,6 +33,8 @@ const EditProfile = () => {
         skill: user.skill || "",
         gender: user.gender || "",
         dob: user.dob || "",
+        language: user.language || "",
+        education: user.education || "",
       });
     }
   }, [user]);
@@ -42,7 +47,6 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Basic validation
     if (!formData.name || !formData.email) {
       alert("Name and Email are required!");
       return;
@@ -59,7 +63,11 @@ const EditProfile = () => {
       const { data: updatedProfile } = await API.put(
         `/user/jobs/profile/update/${user.userId}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       const newUser = {
@@ -72,12 +80,33 @@ const EditProfile = () => {
         skill: updatedProfile.skill ?? "",
         gender: updatedProfile.gender ?? "",
         dob: updatedProfile.dob ?? "",
+        language: updatedProfile.language ?? "",
+        education: updatedProfile.education ?? "",
+        resumePath: updatedProfile.resumePath ?? "",
         role: updatedProfile.role || "",
       };
 
       updateUser(newUser);
       setFormData(newUser);
-      alert("Profile updated successfully!");
+
+      if (resume) {
+        const resumeFormData = new FormData();
+        resumeFormData.append("file", resume);
+
+        await API.post(
+          `/user/jobs/profile/${user.userId}/upload-resume`,
+          resumeFormData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        alert("Profile and resume updated successfully!");
+      } else {
+        alert("Profile updated successfully!");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile.");
@@ -92,10 +121,20 @@ const EditProfile = () => {
       <div className="edit-profile-form">
         <h2>Edit Profile</h2>
         {isLoading ? (
-          <p>Updating profile...</p> // ⏳ You can replace this with a spinner
+          <p>Updating profile...</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            {["name", "email", "mobileNumber", "location", "experience", "skill", "gender"].map((field) => (
+            {[
+              "name",
+              "email",
+              "mobileNumber",
+              "location",
+              "experience",
+              "skill",
+              "gender",
+              "language",
+              "education",
+            ].map((field) => (
               <input
                 key={field}
                 name={field}
@@ -105,12 +144,20 @@ const EditProfile = () => {
                 required={["name", "email"].includes(field)}
               />
             ))}
+
             <input
               name="dob"
               type="date"
               value={formData.dob}
               onChange={handleChange}
             />
+
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setResume(e.target.files[0])}
+            />
+
             <button type="submit">Save Changes</button>
           </form>
         )}
