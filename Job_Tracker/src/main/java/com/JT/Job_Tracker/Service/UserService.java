@@ -77,4 +77,10 @@ public class UserService {
 
         return Files.readAllBytes(Paths.get(filePath));
     }
+    
+    public User getUserById(UUID userId) {
+        return userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    }
+
 }

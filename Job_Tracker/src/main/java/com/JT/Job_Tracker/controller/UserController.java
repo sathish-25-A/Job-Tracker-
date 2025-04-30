@@ -50,13 +50,19 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     
-  
     @PutMapping("/profile/update/{userId}")
     public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody User user) {
         User updatedProfile = userService.updateProfile(userId, user);
         return ResponseEntity.ok(updatedProfile);
-
     }
+    
+ // View user profile by userId
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<User> getUserProfile(@PathVariable UUID userId) {
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(user);
+    }
+
 
     @PostMapping("/profile/{userId}/upload-resume")
     public ResponseEntity<String> uploadResume(
