@@ -4,26 +4,25 @@ import { useAuth } from "../../context/AuthContext";
 import Navbar from "../../Components/Navbar";
 
 const EditProfile = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    location: "",
     mobileNumber: "",
+    location: "",
     experience: "",
     skill: "",
     gender: "",
     dob: "",
   });
-  const [resume, setResume] = useState(null);
 
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
         email: user.email || "",
-        location: user.location || "",
         mobileNumber: user.mobileNumber || "",
+        location: user.location || "",
         experience: user.experience || "",
         skill: user.skill || "",
         gender: user.gender || "",
@@ -37,54 +36,51 @@ const EditProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleResumeChange = (e) => {
-    setResume(e.target.files[0]);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("authToken");
+    if (!token || !user?.userId) {
+      alert("Authentication error."); 
+      return;
+    }
+  
     try {
-      const token = localStorage.getItem("authToken");
-
-      if (!token) {
-        alert("User is not authenticated.");
-        return;
-      }
-
-      if (!user || !user.userId) {
-        alert("User information is missing.");
-        return;
-      }
-
-      // Prepare FormData for the profile data
-      const profileData = new FormData();
-      profileData.append("name", formData.name);
-      profileData.append("email", formData.email);
-      profileData.append("location", formData.location);
-      profileData.append("mobileNumber", formData.mobileNumber);
-      profileData.append("experience", formData.experience);
-      profileData.append("skill", formData.skill);
-      profileData.append("gender", formData.gender);
-      profileData.append("dob", formData.dob);
-
-      if (resume) profileData.append("resume", resume);
-
-      // PUT request to update user profile data
-      const response = await API.put(`/user/jobs/add${user.userId}`, profileData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("Profile updated successfully:", response.data);
+      // 1) Update on the server
+      const { data: updatedProfile } = await API.put(
+        `/user/jobs/profile/update/${user.userId}`,
+        formData,
+        { headers: { "Authorization": `Bearer ${token}` } }
+      );
+  
+      console.log("Profile updated successfully:", updatedProfile);
+  
+      // 2) Flatten the response properly and coalesce null/undefined -> ""
+      const newUser = {
+        userId:      updatedProfile.user.id,
+        name:        updatedProfile.user.name || "",
+        email:       updatedProfile.user.email || "",
+        mobileNumber:updatedProfile.mobileNumber   ?? "",
+        location:    updatedProfile.location       ?? "",
+        experience:  updatedProfile.experience     ?? "",
+        skill:       updatedProfile.skill          ?? "",
+        gender:      updatedProfile.gender         ?? "",
+        dob:         updatedProfile.dob            ?? "",
+        role:        updatedProfile.user.role      || "",
+      };
+  
+      // 3) Update the context (and localStorage)
+      updateUser(newUser);
+  
+      // 4) Mirror into local form state so the inputs re-render with the new values
+      setFormData(newUser);
+  
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile.");
     }
   };
-
+  
 
   return (
     <div>
@@ -92,59 +88,20 @@ const EditProfile = () => {
       <div className="edit-profile-form">
         <h2>Edit Profile</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Name"
-          />
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-          />
-          <input
-            name="mobileNumber"
-            value={formData.mobileNumber}
-            onChange={handleChange}
-            placeholder="Mobile"
-          />
-          <input
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Location"
-          />
-          <input
-            name="experience"
-            value={formData.experience}
-            onChange={handleChange}
-            placeholder="Experience"
-          />
-          <input
-            name="skill"
-            value={formData.skill}
-            onChange={handleChange}
-            placeholder="Skills"
-          />
-          <input
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            placeholder="Gender"
-          />
+          {["name","email","mobileNumber","location","experience","skill","gender"].map((field) => (
+            <input
+              key={field}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+            />
+          ))}
           <input
             name="dob"
+            type="date"
             value={formData.dob}
             onChange={handleChange}
-            placeholder="Date of Birth"
-            type="date"
-          />
-          <input
-            type="file"
-            onChange={handleResumeChange}
-            accept=".pdf,.doc,.docx"
           />
           <button type="submit">Save Changes</button>
         </form>

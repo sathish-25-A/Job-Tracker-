@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api"; // 👈 updated
 import { useAuth } from "../context/AuthContext";
-import  jwtDecode  from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -39,11 +39,16 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify({ name, email, role }));
 
       login({ name, email, role }, token);
+
+      // Redirect based on role
       navigate(role === "ADMIN" ? "/admin/dashboard" : "/home");
     } catch (error) {
       console.error("Login error:", error);
-      if (error.response?.status === 401) {
+      // Improved error handling
+      if (error.response && error.response.status === 401) {
         setError("Invalid credentials, please try again.");
+      } else if (error.response && error.response.status === 500) {
+        setError("Server error. Please try again later.");
       } else {
         setError("An error occurred while logging in. Please try again.");
       }

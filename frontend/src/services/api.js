@@ -1,3 +1,4 @@
+// src/services/api.js
 import axios from "axios";
 
 const API = axios.create({
@@ -6,18 +7,14 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken"); // ✅ Corrected key
 
-    // Add token to headers if available
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    // Log the request headers for debugging purposes
     console.log("Request Headers:", config.headers);
 
-    // Dynamically set Content-Type for file uploads (multipart/form-data)
     if (config.data instanceof FormData) {
       config.headers["Content-Type"] = "multipart/form-data";
     } else {
@@ -26,15 +23,12 @@ API.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log error to console for debugging
     console.error("API error:", error.response || error.message);
     return Promise.reject(error);
   }
